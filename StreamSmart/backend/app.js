@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
@@ -17,12 +18,15 @@ app.get("/", (req, res) => {
   res.send("Welcome to StreamSmart Backend!");
 });
 
-// Health check API
+// Health check
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
     message: "StreamSmart API is running"
   });
 });
+
+// Authentication routes
+app.use("/api/auth", authRoutes);
 
 export default app;

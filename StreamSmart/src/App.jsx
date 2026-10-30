@@ -1,6 +1,8 @@
+import { Routes, Route } from "react-router-dom";
+
 import Navbar from "./Components/navbar";
 import Footer from "./Components/footer";
-import Dashboard from "./Components/Dashboard";
+import Login from "./form/login";
 
 function App() {
   return (
@@ -8,7 +10,9 @@ function App() {
       <Navbar />
 
       <main className="main-content">
-        <Dashboard/>
+        <Routes>
+          <Route path="/" element={<Login />} />
+        </Routes>
       </main>
 
       <Footer />
