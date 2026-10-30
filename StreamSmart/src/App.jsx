@@ -5,6 +5,7 @@ import Navbar from "./Components/navbar";
 import Footer from "./Components/footer";
 import Login from "./form/login";
 import Register from "./form/register";
+import UserProfile from "./form/userprofile";
 import FlashMessage from "./Components/FlashMessage";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<UserProfile />} />
           <Route
             path="*"
             element={<h2>404 - Page Not Found</h2>}

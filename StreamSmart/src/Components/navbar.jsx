@@ -148,15 +148,12 @@ export default function Navbar() {
             ) : (
               <>
                 <button
-                  className="profile-btn"
-                  title="Profile"
-                  onClick={() => {
-                    closeMenu();
-                    navigate("/profile");
-                  }}
-                >
-                  <i className="fa-solid fa-user"></i>
-                </button>
+                    className="profile-btn"
+                    onClick={() => navigate("/profile")}
+                    title="My Profile"
+                  >
+                    <i className="fa-solid fa-user"></i>
+                  </button>
 
                 <button
                   className="logout-btn"
