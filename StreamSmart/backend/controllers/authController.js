@@ -3,9 +3,6 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
 export const login = async (req, res) => {
-  console.log("LOGIN ROUTE HIT");
-  console.log("Request body:", req.body);
-
   try {
     const { email, password } = req.body || {};
 
@@ -16,13 +13,9 @@ export const login = async (req, res) => {
       });
     }
 
-    console.log("Searching for user...");
-
     const user = await User.findOne({
       email: email.trim().toLowerCase()
     });
-
-    console.log("User found:", Boolean(user));
 
     if (!user) {
       return res.status(401).json({
@@ -32,6 +25,8 @@ export const login = async (req, res) => {
     }
 
     const isMatch = await user.comparePassword(password);
+
+    // Temporary debugging information
 
     if (!isMatch) {
       return res.status(401).json({
@@ -59,11 +54,10 @@ export const login = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("LOGIN CONTROLLER ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: "Internal server error"
     });
   }
 };

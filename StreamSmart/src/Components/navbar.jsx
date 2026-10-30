@@ -1,139 +1,165 @@
-
-import { useState } from "react";
+import { showSuccess } from "./FlashMessage";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import "./Navbar.css";
 
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    () => Boolean(localStorage.getItem("token"))
+  );
 
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const updateAuth = () => {
+      setIsLoggedIn(Boolean(localStorage.getItem("token")));
+    };
+
+    window.addEventListener("authChanged", updateAuth);
+
+    return () => {
+      window.removeEventListener("authChanged", updateAuth);
+    };
+  }, []);
+
   const handleLogout = () => {
-    // Later connect this with your logout API
-    setIsLoggedIn(false);
-    navigate("/login");
-  };
+  // Remove authentication data
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  // Update navbar authentication state
+  setIsLoggedIn(false);
+
+  // Close mobile menu
+  setMenuOpen(false);
+
+  // Notify other components
+  window.dispatchEvent(new Event("authChanged"));
+
+  // Show flash message
+  showSuccess("You have logged out successfully!");
+
+  // Redirect to login page
+  navigate("/");
+};
+
+  const closeMenu = () => setMenuOpen(false);
 
   const navLinkClass = ({ isActive }) =>
-    `nav-link fw-medium px-3 ${
-      isActive ? "active text-primary" : "text-dark"
-    }`;
+    `stream-nav-link ${isActive ? "active" : ""}`;
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
-      <div className="container">
+    <header className="stream-navbar">
+      <nav className="stream-nav-content container">
 
         {/* Brand */}
-        <Link
-          to="/"
-          className="navbar-brand fw-bold fs-4 text-primary"
-        >
-          <i className="fa-solid fa-satellite-dish me-2"></i>
-          StreamSmart
+        <Link to="/" className="stream-brand" onClick={closeMenu}>
+          <span className="brand-icon">
+            <i className="fa-solid fa-satellite-dish"></i>
+          </span>
+
+          <span>
+            Stream<span className="brand-highlight">Smart</span>
+          </span>
         </Link>
 
         {/* Mobile Toggle */}
         <button
-          className="navbar-toggler"
-          type="button"
+          className="mobile-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-expanded={menuOpen}
           aria-label="Toggle navigation"
+          aria-expanded={menuOpen}
         >
-          <span className="navbar-toggler-icon"></span>
+          <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`}></i>
         </button>
 
-        {/* Navigation Links */}
-        <div
-          className={`collapse navbar-collapse ${
-            menuOpen ? "show" : ""
-          }`}
-        >
-          <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
+        {/* Navigation */}
+        <div className={`stream-nav-menu ${menuOpen ? "show" : ""}`}>
 
-            <li className="nav-item">
-              <NavLink
-                to="/"
-                className={navLinkClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                Home
-              </NavLink>
-            </li>
-
-            {isLoggedIn && (
+          <div className="stream-nav-links">
+            {isLoggedIn ? (
               <>
-                <li className="nav-item">
-                  <NavLink
-                    to="/dashboard"
-                    className={navLinkClass}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Dashboard
-                  </NavLink>
-                </li>
-
-                <li className="nav-item">
-                  <NavLink
-                    to="/player"
-                    className={navLinkClass}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Video Player
-                  </NavLink>
-                </li>
-
-                <li className="nav-item">
-                  <NavLink
-                    to="/analytics"
-                    className={navLinkClass}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Analytics
-                  </NavLink>
-                </li>
-
-                <li className="nav-item">
-                  <NavLink
-                    to="/history"
-                    className={navLinkClass}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    History
-                  </NavLink>
-                </li>
-              </>
-            )}
-
-          </ul>
-
-          {/* Authentication */}
-          <div className="d-flex align-items-center gap-2">
-
-            {!isLoggedIn ? (
-              <>
-                <Link
-                  to="/login"
-                  className="btn btn-outline-primary px-3"
+                <NavLink
+                  to="/dashboard"
+                  className={navLinkClass}
+                  onClick={closeMenu}
                 >
-                  Login
-                </Link>
+                  Dashboard
+                </NavLink>
 
-                <Link
-                  to="/register"
-                  className="btn btn-primary px-3"
+                <NavLink
+                  to="/player"
+                  className={navLinkClass}
+                  onClick={closeMenu}
                 >
-                  Get Started
-                </Link>
+                  Video Player
+                </NavLink>
+
+                <NavLink
+                  to="/analytics"
+                  className={navLinkClass}
+                  onClick={closeMenu}
+                >
+                  Analytics
+                </NavLink>
+
+                <NavLink
+                  to="/history"
+                  className={navLinkClass}
+                  onClick={closeMenu}
+                >
+                  History
+                </NavLink>
               </>
             ) : (
               <>
-                <button className="btn btn-light rounded-circle">
+                <NavLink
+                  to="/"
+                  end
+                  className={navLinkClass}
+                  onClick={closeMenu}
+                >
+                  Login
+                </NavLink>
+
+                <NavLink
+                  to="/register"
+                  className={navLinkClass}
+                  onClick={closeMenu}
+                >
+                  Register
+                </NavLink>
+              </>
+            )}
+          </div>
+
+          {/* Authentication Actions */}
+          <div className="stream-auth">
+            {!isLoggedIn ? (
+              <Link
+                to="/register"
+                className="signup-btn"
+                onClick={closeMenu}
+              >
+                Get Started
+                <i className="fa-solid fa-arrow-right ms-2"></i>
+              </Link>
+            ) : (
+              <>
+                <button
+                  className="profile-btn"
+                  title="Profile"
+                  onClick={() => {
+                    closeMenu();
+                    navigate("/profile");
+                  }}
+                >
                   <i className="fa-solid fa-user"></i>
                 </button>
 
                 <button
-                  className="btn btn-outline-danger"
+                  className="logout-btn"
                   onClick={handleLogout}
                 >
                   <i className="fa-solid fa-right-from-bracket me-2"></i>
@@ -141,10 +167,9 @@ export default function Navbar() {
                 </button>
               </>
             )}
-
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 }

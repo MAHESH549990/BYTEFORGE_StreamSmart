@@ -1,3 +1,7 @@
+import {
+  showSuccess,
+  showError
+} from "../Components/FlashMessage";
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -63,16 +67,26 @@ export default function Register() {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Save token after successful registration
+      // Save authentication data
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Update Navbar authentication state
+      window.dispatchEvent(new Event("authChanged"));
+
+      // Show success notification
+      showSuccess(data.message || "Registration successful!");
 
       // Redirect according to user role
       navigate(
-        data.user.role === "admin" ? "/admin" : "/dashboard"
+        data.user.role === "admin"
+          ? "/admin"
+          : "/dashboard"
       );
 
     } catch (error) {
       setError(error.message);
+      showError(error.message);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,9 @@
 
+import {
+  showSuccess,
+  showError
+} from "../Components/FlashMessage";
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
@@ -46,18 +51,26 @@ export default function Login() {
         throw new Error(data.message || "Login failed");
       }
 
-      // Store token after successful login
+      // Save authentication data
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Navigate according to user role
-      if (data.user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard");
-      }
+      // Update Navbar
+      window.dispatchEvent(new Event("authChanged"));
+
+      // Show success message
+      showSuccess(data.message || "Login successful!");
+
+      // Redirect according to role
+      navigate(
+        data.user.role === "admin"
+          ? "/admin"
+          : "/dashboard"
+      );
 
     } catch (error) {
       setError(error.message);
+      showError(error.message);
     } finally {
       setLoading(false);
     }
