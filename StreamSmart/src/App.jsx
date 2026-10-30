@@ -17,6 +17,7 @@ import {
   Search,
 } from "lucide-react";
 
+import VideoPlayer from "./VideoPlayer";
 import "./App.css";
 
 function App() {
@@ -243,6 +244,8 @@ function App() {
                 </div>
               </div>
             </>
+          ) : activePage === "Video Lab" ? (
+            <VideoPlayer />
           ) : (
             <div className="panel placeholder-page">
               <div className="placeholder-icon">
