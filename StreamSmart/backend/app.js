@@ -26,9 +26,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/videos", videoRoutes);
 app.use("/api/experiments", experimentRoutes);
 
-// Test route
+// Redirect backend root to frontend landing page
 app.get("/", (req, res) => {
-  res.send("Welcome to StreamSmart Backend!");
+  res.redirect(process.env.CLIENT_URL);
 });
 
 // Health check
