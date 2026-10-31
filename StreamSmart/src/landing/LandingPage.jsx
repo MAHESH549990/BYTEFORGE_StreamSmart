@@ -1,7 +1,7 @@
-
-import "./LandingPage.css";
 import React from "react";
 import { Link } from "react-router-dom";
+import HeroGlobe from "./HeroGlobe";
+import "./LandingPage.css";
 
 const features = [
   {
@@ -36,7 +36,7 @@ const features = [
   }
 ];
 
-function App() {
+function LandingPage() {
   return (
     <div className="site-shell">
 
@@ -65,7 +65,7 @@ function App() {
       <main>
 
         {/* Hero Section */}
-        <section className="hero container">
+        <section className="hero container ss-hero">
 
           <div className="hero-copy">
 
@@ -112,91 +112,9 @@ function App() {
 
           </div>
 
-          {/* Streaming Dashboard Preview */}
-          <div className="visual-wrap" id="dashboard">
-
-            <div className="glow"></div>
-
-            <div className="player-card">
-
-              <div className="player-top">
-                <span>
-                  <b className="live-dot"></b>
-                  STREAMSMART DEMO
-                </span>
-
-                <span className="quality">
-                  1080p <b>HD</b>
-                </span>
-              </div>
-
-              <div className="video-scene">
-
-                <div className="scene-sun"></div>
-                <div className="mountain back"></div>
-                <div className="mountain front"></div>
-
-                <div className="play-button">▶</div>
-
-                <div className="scene-caption">
-                  <small>ADAPTIVE VIDEO STREAMING</small>
-                  <strong>Every frame. In sync.</strong>
-                </div>
-
-              </div>
-
-              <div className="player-controls">
-                <span>▶</span>
-                <div className="timeline">
-                  <i></i>
-                </div>
-                <span>02:14 / 12:48</span>
-                <span>⚙</span>
-                <span>⛶</span>
-              </div>
-
-            </div>
-
-            {/* Network Speed Card */}
-            <div className="floating-card speed-card">
-
-              <span className="mini-label">NETWORK BANDWIDTH</span>
-
-              <strong>
-                24.8 <small>Mbps</small>
-              </strong>
-
-              <div className="sparkline">
-                {Array.from({ length: 12 }, (_, index) => (
-                  <i key={index}></i>
-                ))}
-              </div>
-
-              <span className="positive">
-                ↑ Network monitoring
-              </span>
-
-            </div>
-
-            {/* Buffer Health Card */}
-            <div className="floating-card buffer-card">
-
-              <span className="mini-label">BUFFER HEALTH</span>
-
-              <strong>
-                98<span>%</span>
-              </strong>
-
-              <div className="buffer-track">
-                <i></i>
-              </div>
-
-              <span className="positive">
-                Playback status
-              </span>
-
-            </div>
-
+          {/* Animated Globe */}
+          <div className="visual-wrap ss-globe-wrap" id="dashboard">
+            <HeroGlobe />
           </div>
 
         </section>
@@ -401,4 +319,4 @@ function App() {
   );
 }
 
-export default App;
+export default LandingPage;
