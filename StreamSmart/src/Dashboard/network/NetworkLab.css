@@ -1,0 +1,269 @@
+
+.network-lab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #1e293b;
+}
+
+.network-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.network-eyebrow {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.network-header h2 {
+  margin: 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.network-header p,
+.section-heading p {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+}
+
+.network-header-icon {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.network-section,
+.network-summary {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  color: #2563eb;
+}
+
+.section-heading h3 {
+  color: #1e293b;
+  font-size: 19px;
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.network-profiles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.profile-card:hover,
+.profile-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.profile-name {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.profile-description {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.network-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.network-control {
+  padding: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.control-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.control-top label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.control-top strong {
+  color: #2563eb;
+  font-size: 14px;
+}
+
+.network-control input {
+  width: 100%;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #64748b;
+  font-size: 11px;
+  margin-top: 8px;
+}
+
+.network-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.summary-card svg {
+  color: #2563eb;
+}
+
+.summary-card span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.summary-card strong {
+  font-size: 20px;
+}
+
+.network-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.apply-network-btn,
+.reset-network-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.apply-network-btn {
+  color: #fff;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.reset-network-btn {
+  color: #334155;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+}
+
+.network-success {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+  padding: 13px;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.network-note {
+  padding: 18px 20px;
+  background: #eff6ff;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+}
+
+.network-note strong {
+  color: #1e40af;
+}
+
+.network-note p {
+  color: #475569;
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .network-profiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .network-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .network-header {
+    padding: 20px;
+  }
+
+  .network-header h2 {
+    font-size: 23px;
+  }
+
+  .network-section,
+  .network-summary {
+    padding: 18px;
+  }
+
+  .network-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .network-actions {
+    flex-direction: column;
+  }
+}

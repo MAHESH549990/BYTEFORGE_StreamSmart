@@ -1,0 +1,964 @@
+
+/* ========================================
+   1. GLOBAL STYLES
+======================================== */
+
+/* Remove default link underline */
+.site-shell a,
+.site-shell a:link,
+.site-shell a:visited,
+.site-shell a:hover,
+.site-shell a:active {
+  text-decoration: none !important;
+}
+
+/* Keep navbar links clean */
+.nav-links a {
+  text-decoration: none !important;
+}
+
+/* Brand styling */
+.brand {
+  text-decoration: none !important;
+}
+
+/* Buttons */
+.nav-cta,
+.button {
+  text-decoration: none !important;
+}
+
+/* Feature links */
+.feature-card a,
+.text-link {
+  text-decoration: none !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #080d18;
+  color: #f4f7ff;
+  font-family: "DM Sans", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-shell {
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 76% 17%,
+      rgba(22, 86, 150, 0.17),
+      transparent 32%
+    ),
+    #080d18;
+}
+
+.container {
+  width: min(1160px, calc(100% - 48px));
+  margin: auto;
+}
+
+
+/* ========================================
+   2. NAVBAR
+======================================== */
+
+.navbar {
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Brand Logo */
+
+.brand {
+  font: 700 22px "Space Grotesk";
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand > span:last-child {
+  color: #66d9ff;
+  margin-left: -8px;
+}
+
+.brand-mark {
+  width: 29px;
+  height: 29px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #56d9ff, #5577ff);
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.brand-mark i {
+  color: #ffffff;
+}
+
+/* Navigation Links */
+
+.nav-links {
+  display: flex;
+  gap: 34px;
+  color: #a9b4c8;
+  font-size: 13px;
+}
+
+.nav-links a:hover,
+.text-link:hover {
+  color: #ffffff;
+}
+
+/* Navbar CTA */
+
+.nav-cta {
+  border: 1px solid #33445d;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-size: 13px;
+}
+
+.nav-cta span {
+  color: #66d9ff;
+  margin-left: 8px;
+}
+
+
+/* ========================================
+   3. HERO SECTION
+======================================== */
+
+.hero {
+  min-height: 600px;
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  align-items: center;
+  gap: 40px;
+  padding-top: 40px;
+  padding-bottom: 54px;
+}
+
+/* Eyebrow */
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #70dfff;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.pulse,
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #54e6b2;
+  box-shadow: 0 0 12px #54e6b2;
+}
+
+/* Hero Heading */
+
+.hero h1,
+.section h2,
+.workflow h2,
+.final-cta h2 {
+  font: 600 clamp(44px, 5.2vw, 67px) / 1.04 "Space Grotesk";
+  letter-spacing: -3px;
+  margin: 24px 0 20px;
+}
+
+.hero h1 em,
+.section h2 em,
+.workflow h2 em,
+.final-cta h2 em {
+  font-style: normal;
+  color: #66d9ff;
+}
+
+/* Hero Description */
+
+.hero-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #9ba9bf;
+  max-width: 465px;
+}
+
+/* Hero Buttons */
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-top: 31px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  padding: 15px 19px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.primary {
+  background: linear-gradient(110deg, #5bdcff, #6687ff);
+  color: #07111f;
+  box-shadow: 0 10px 35px #367bd52b;
+}
+
+.primary span {
+  font-size: 18px;
+}
+
+.text-link {
+  font-size: 13px;
+  color: #c2ccda;
+}
+
+.text-link span {
+  color: #65d9ff;
+  margin-left: 5px;
+}
+
+/* Trust Row */
+
+.trust-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 45px;
+  color: #73839a;
+  font-size: 11px;
+}
+
+.avatar-stack {
+  display: flex;
+}
+
+.avatar-stack i {
+  font-style: normal;
+  width: 25px;
+  height: 25px;
+  border: 2px solid #080d18;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-right: -7px;
+  background: #243b5b;
+  color: #a9eaff;
+  font-size: 9px;
+}
+
+.avatar-stack i:nth-child(2) {
+  background: #4b456d;
+}
+
+.avatar-stack i:nth-child(3) {
+  background: #315b5d;
+}
+
+
+/* ========================================
+   4. STREAMING DASHBOARD PREVIEW
+======================================== */
+
+.visual-wrap {
+  position: relative;
+  min-height: 410px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Background Glow */
+
+.glow {
+  position: absolute;
+  width: 390px;
+  height: 330px;
+  background: #126bb5;
+  filter: blur(110px);
+  opacity: 0.2;
+}
+
+/* Player Card */
+
+.player-card {
+  z-index: 1;
+  width: min(100%, 510px);
+  padding: 12px;
+  border: 1px solid #26364e;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #17253a, #0d1728);
+  box-shadow: 0 30px 80px #0008;
+  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+}
+
+.player-top,
+.player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #8fa1ba;
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 4px 5px 12px;
+}
+
+.player-top > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quality {
+  color: #dbeaff;
+}
+
+.quality b {
+  color: #65dfff;
+}
+
+/* Video Scene */
+
+.video-scene {
+  height: 260px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(
+    180deg,
+    #163d62 0%,
+    #4d7790 48%,
+    #e39a69 100%
+  );
+}
+
+.scene-sun {
+  position: absolute;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #ffd8a0;
+  filter: blur(2px);
+  right: 23%;
+  top: 23%;
+}
+
+/* Mountains */
+
+.mountain {
+  position: absolute;
+  bottom: -30px;
+  width: 120%;
+  height: 160px;
+  clip-path: polygon(
+    0 70%,
+    20% 18%,
+    35% 54%,
+    52% 0,
+    70% 58%,
+    84% 20%,
+    100% 70%,
+    100% 100%,
+    0 100%
+  );
+}
+
+.mountain.back {
+  background: #304f62;
+  opacity: 0.8;
+}
+
+.mountain.front {
+  background: #142d3d;
+  transform: scale(1.2);
+  transform-origin: bottom;
+}
+
+/* Play Button */
+
+.play-button {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  padding-left: 4px;
+  color: #ffffff;
+  background: #ffffff2b;
+  border: 1px solid #ffffff8a;
+  backdrop-filter: blur(8px);
+  font-size: 15px;
+}
+
+/* Scene Caption */
+
+.scene-caption {
+  position: absolute;
+  left: 20px;
+  bottom: 17px;
+  display: grid;
+  gap: 5px;
+  text-shadow: 0 2px 8px #000;
+}
+
+.scene-caption small {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #d8f3ff;
+}
+
+.scene-caption strong {
+  font: 600 20px "Space Grotesk";
+}
+
+/* Player Controls */
+
+.player-controls {
+  padding: 12px 5px 2px;
+  gap: 13px;
+}
+
+.timeline {
+  height: 3px;
+  background: #34455b;
+  flex: 1;
+  border-radius: 5px;
+}
+
+.timeline i {
+  display: block;
+  width: 35%;
+  height: 100%;
+  background: #65d9ff;
+  border-radius: 5px;
+}
+
+
+/* ========================================
+   5. FLOATING ANALYTICS CARDS
+======================================== */
+
+.floating-card {
+  position: absolute;
+  z-index: 2;
+  background: #101d30ed;
+  border: 1px solid #2c405b;
+  border-radius: 12px;
+  padding: 15px 17px;
+  box-shadow: 0 15px 45px #0008;
+  backdrop-filter: blur(12px);
+}
+
+/* Network Speed Card */
+
+.speed-card {
+  right: -7px;
+  top: 65px;
+  width: 166px;
+}
+
+/* Buffer Health Card */
+
+.buffer-card {
+  left: -15px;
+  bottom: 48px;
+  width: 154px;
+}
+
+/* Card Content */
+
+.mini-label {
+  display: block;
+  color: #8094af;
+  font-size: 8px;
+  letter-spacing: 1.4px;
+}
+
+.floating-card strong {
+  display: block;
+  font: 600 25px "Space Grotesk";
+  margin: 8px 0;
+}
+
+.floating-card strong small,
+.floating-card strong span {
+  font: 500 11px "DM Sans";
+  color: #a9bad0;
+}
+
+/* Speed Graph */
+
+.sparkline {
+  height: 24px;
+  display: flex;
+  align-items: end;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.sparkline i {
+  width: 8px;
+  border-radius: 3px 3px 0 0;
+  background: #51cfff;
+  height: 45%;
+}
+
+.sparkline i:nth-child(3n) {
+  height: 85%;
+}
+
+.sparkline i:nth-child(2n) {
+  height: 65%;
+}
+
+.sparkline i:nth-child(5n) {
+  height: 100%;
+}
+
+.positive {
+  font-size: 9px;
+  color: #61e5b5;
+}
+
+/* Buffer Progress */
+
+.buffer-track {
+  height: 5px;
+  background: #26384d;
+  border-radius: 5px;
+  margin: 12px 0 8px;
+}
+
+.buffer-track i {
+  display: block;
+  width: 98%;
+  height: 100%;
+  background: linear-gradient(90deg, #4bd9c1, #67dfff);
+  border-radius: 5px;
+}
+
+
+/* ========================================
+   6. METRICS SECTION
+======================================== */
+
+.metrics {
+  border-top: 1px solid #1b2a3e;
+  border-bottom: 1px solid #1b2a3e;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 27px 0;
+  position: relative;
+}
+
+.metrics div {
+  display: grid;
+  gap: 5px;
+  padding-left: 28px;
+  border-left: 1px solid #26364b;
+}
+
+.metrics div:first-child {
+  border: 0;
+  padding-left: 0;
+}
+
+.metrics strong {
+  font: 600 23px "Space Grotesk";
+  color: #e8f6ff;
+}
+
+.metrics span {
+  font-size: 11px;
+  color: #8292a9;
+}
+
+.metrics p {
+  position: absolute;
+  right: 0;
+  bottom: -29px;
+  color: #5f6e82;
+  font-size: 9px;
+}
+
+
+/* ========================================
+   7. FEATURES SECTION
+======================================== */
+
+.section {
+  padding-top: 130px;
+  padding-bottom: 125px;
+}
+
+.section-heading {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 55px;
+}
+
+.section-heading .eyebrow {
+  justify-content: center;
+}
+
+.section h2,
+.workflow h2,
+.final-cta h2 {
+  font-size: 48px;
+  letter-spacing: -2px;
+  margin: 17px 0;
+}
+
+.section-heading > p,
+.workflow-inner > div:first-child > p {
+  color: #8d9bb0;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+/* Feature Grid */
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 17px;
+}
+
+.feature-card {
+  padding: 28px;
+  border: 1px solid #1e3047;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #111e30, #0b1422);
+  min-height: 220px;
+}
+
+/* Feature Icon */
+
+.feature-icon {
+  width: 39px;
+  height: 39px;
+  border-radius: 10px;
+  background: #14324a;
+  color: #65d9ff;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+}
+
+/* Feature Content */
+
+.feature-card h3,
+.step h3 {
+  font: 600 17px "Space Grotesk";
+  margin: 22px 0 9px;
+}
+
+.feature-card p,
+.step p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #8797ad;
+}
+
+.feature-card a {
+  display: inline-block;
+  margin-top: 14px;
+  color: #67d9ff;
+  font-size: 11px;
+}
+
+
+/* ========================================
+   8. HOW IT WORKS SECTION
+======================================== */
+
+.workflow {
+  background: linear-gradient(110deg, #0d1929, #0b1422);
+  border-top: 1px solid #1d2c40;
+  border-bottom: 1px solid #1d2c40;
+  padding: 90px 0;
+}
+
+.workflow-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+
+.workflow h2 {
+  font-size: 46px;
+}
+
+.workflow-inner > div:first-child > p {
+  max-width: 390px;
+}
+
+/* Workflow Steps */
+
+.steps {
+  display: grid;
+  gap: 23px;
+}
+
+.step {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #23334a;
+  padding-bottom: 20px;
+}
+
+.step > b {
+  font: 600 13px "Space Grotesk";
+  color: #60d9ff;
+  padding-top: 2px;
+}
+
+.step h3 {
+  margin: 0 0 6px;
+}
+
+.step p {
+  margin: 0;
+}
+
+
+/* ========================================
+   9. FINAL CALL TO ACTION
+======================================== */
+
+.final-cta {
+  padding-top: 90px;
+  padding-bottom: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.final-cta h2 {
+  margin-bottom: 0;
+}
+
+
+/* ========================================
+   10. FOOTER
+======================================== */
+
+.footer {
+  border-top: 1px solid #1d2a3d;
+  padding: 25px 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #718198;
+  font-size: 10px;
+}
+
+.footer .brand {
+  font-size: 17px;
+  color: #eaf4ff;
+}
+
+.footer .brand-mark {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+
+.footer > a:last-child {
+  color: #a8b8cb;
+}
+
+
+/* ========================================
+   11. TABLET RESPONSIVE DESIGN
+======================================== */
+
+@media (max-width: 800px) {
+
+  .nav-links {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 75px;
+    gap: 20px;
+  }
+
+  .hero-copy {
+    text-align: center;
+  }
+
+  .hero-text {
+    margin: auto;
+  }
+
+  .eyebrow,
+  .hero-actions,
+  .trust-row {
+    justify-content: center;
+  }
+
+  .visual-wrap {
+    min-height: 390px;
+  }
+
+  .speed-card {
+    right: 0;
+  }
+
+  .buffer-card {
+    left: 0;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .metrics div:nth-child(3) {
+    padding-left: 0;
+    border: 0;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-inner {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+
+  .final-cta {
+    gap: 25px;
+  }
+
+  .footer {
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+}
+
+
+/* ========================================
+   12. MOBILE RESPONSIVE DESIGN
+======================================== */
+
+@media (max-width: 520px) {
+
+  .container {
+    width: min(100% - 32px, 1160px);
+  }
+
+  .navbar {
+    height: 70px;
+  }
+
+  .hero h1 {
+    font-size: 47px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: 17px;
+  }
+
+  .visual-wrap {
+    min-height: 330px;
+  }
+
+  .video-scene {
+    height: 205px;
+  }
+
+  .player-card {
+    padding: 8px;
+  }
+
+  .speed-card {
+    top: 15px;
+    right: -3px;
+    transform: scale(0.86);
+    transform-origin: top right;
+  }
+
+  .buffer-card {
+    bottom: 10px;
+    left: -5px;
+    transform: scale(0.86);
+    transform-origin: bottom left;
+  }
+
+  .metrics {
+    padding: 23px 0;
+  }
+
+  .metrics div {
+    padding-left: 15px;
+  }
+
+  .metrics strong {
+    font-size: 19px;
+  }
+
+  .section {
+    padding: 90px 0;
+  }
+
+  .section h2,
+  .workflow h2,
+  .final-cta h2 {
+    font-size: 39px;
+  }
+
+  .workflow {
+    padding: 70px 0;
+  }
+
+  .final-cta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .metrics p {
+    font-size: 8px;
+  }
+
+}

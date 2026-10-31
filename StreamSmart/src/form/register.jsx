@@ -1,3 +1,4 @@
+
 import {
   showSuccess,
   showError
@@ -5,7 +6,7 @@ import {
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Login.css";
+import "./Register.css";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -19,6 +20,8 @@ export default function Register() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -67,17 +70,13 @@ export default function Register() {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Save authentication data
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Update Navbar authentication state
       window.dispatchEvent(new Event("authChanged"));
 
-      // Show success notification
       showSuccess(data.message || "Registration successful!");
 
-      // Redirect according to user role
       navigate(
         data.user.role === "admin"
           ? "/admin"
@@ -93,114 +92,167 @@ export default function Register() {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-card">
+    <div className="register-page">
+      <div className="register-card">
 
-        <div className="text-center mb-4">
-          <div className="login-icon">
-            <i className="fa-solid fa-user-plus"></i>
+        <div className="register-header">
+          <Link to="/" className="register-brand">
+            <span className="register-brand-icon">
+              <i className="fa-solid fa-satellite-dish"></i>
+            </span>
+            Stream<span>Smart</span>
+          </Link>
+
+          <div className="register-heading">
+            <div className="register-icon">
+              <i className="fa-solid fa-user-plus"></i>
+            </div>
+
+            <h2>Create your account</h2>
+
+            <p>
+              Start experiencing smarter video streaming.
+            </p>
           </div>
-
-          <h2 className="fw-bold mt-3">Create Account</h2>
-
-          <p className="text-muted">
-            Join StreamSmart and enjoy smarter streaming.
-          </p>
         </div>
 
         {error && (
-          <div className="alert alert-danger">
+          <div className="register-error">
+            <i className="fa-solid fa-circle-exclamation"></i>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
 
-          <div className="mb-3">
-            <label className="form-label fw-semibold">
-              Full Name
-            </label>
+          <div className="register-field">
+            <label htmlFor="name">Full Name</label>
 
-            <input
-              type="text"
-              name="name"
-              className="form-control"
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+            <div className="register-input">
+              <i className="fa-regular fa-user"></i>
+
+              <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                value={formData.name}
+                onChange={handleChange}
+                autoComplete="name"
+                required
+              />
+            </div>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label fw-semibold">
-              Email Address
-            </label>
+          <div className="register-field">
+            <label htmlFor="email">Email Address</label>
 
-            <input
-              type="email"
-              name="email"
-              className="form-control"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <div className="register-input">
+              <i className="fa-regular fa-envelope"></i>
+
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+                autoComplete="email"
+                required
+              />
+            </div>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label fw-semibold">
-              Password
-            </label>
+          <div className="register-field">
+            <label htmlFor="password">Password</label>
 
-            <input
-              type="password"
-              name="password"
-              className="form-control"
-              placeholder="Create a password"
-              value={formData.password}
-              onChange={handleChange}
-              minLength={6}
-              required
-            />
+            <div className="register-input">
+              <i className="fa-solid fa-lock"></i>
+
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Create a password"
+                value={formData.password}
+                onChange={handleChange}
+                minLength={6}
+                autoComplete="new-password"
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                <i className={`fa-regular ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+              </button>
+            </div>
           </div>
 
-          <div className="mb-4">
-            <label className="form-label fw-semibold">
-              Confirm Password
-            </label>
+          <div className="register-field">
+            <label htmlFor="confirmPassword">Confirm Password</label>
 
-            <input
-              type="password"
-              name="confirmPassword"
-              className="form-control"
-              placeholder="Confirm your password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              minLength={6}
-              required
-            />
+            <div className="register-input">
+              <i className="fa-solid fa-shield-halved"></i>
+
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                minLength={6}
+                autoComplete="new-password"
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                <i className={`fa-regular ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+              </button>
+            </div>
           </div>
 
           <button
             type="submit"
-            className="btn btn-primary w-100 py-2 fw-semibold"
+            className="register-submit"
             disabled={loading}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm"></span>
+                Creating Account...
+              </>
+            ) : (
+              <>
+                Create Account
+                <i className="fa-solid fa-arrow-right"></i>
+              </>
+            )}
           </button>
 
         </form>
 
-        <div className="text-center mt-4">
-          <span className="text-muted">
-            Already have an account?{" "}
-          </span>
-
-          <Link to="/" className="text-decoration-none fw-semibold">
-            Login
-          </Link>
+        <div className="register-divider">
+          <span>Already have an account?</span>
         </div>
+
+        <Link to="/login" className="register-login">
+          Login to your account
+        </Link>
+
+        <p className="register-footer">
+          <i className="fa-solid fa-shield-halved"></i>
+          Your account information is securely protected.
+        </p>
 
       </div>
     </div>
