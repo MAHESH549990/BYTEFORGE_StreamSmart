@@ -1,4 +1,4 @@
-
+import EdgeAnalytics from "./Dashboard/edge/EdgeAnalytics";
 import { Routes, Route } from "react-router-dom";
 
 import UserDashboard from "./Dashboard/UserDashboard.jsx";
@@ -49,6 +49,8 @@ function App() {
             <Route path="player" element={<VideoPlayer />} />
 
             <Route path="video-quality" element={<VideoPlayer />} />
+            {/* NEW EDGE SERVER ROUTE */}
+             <Route path="edge" element={<EdgeAnalytics />} />
 
             <Route path="network-lab" element={<NetworkLab />} />
 

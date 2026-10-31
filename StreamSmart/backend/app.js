@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
+
 import authRoutes from "./routes/authRoutes.js";
 import experimentRoutes from "./routes/experimentRoutes.js";
-
 import videoRoutes from "./routes/videoRoutes.js";
+import edgeRoutes from "./routes/edgeRoutes.js";
+
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -23,8 +25,12 @@ const __dirname = path.dirname(__filename);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Existing routes
 app.use("/api/videos", videoRoutes);
 app.use("/api/experiments", experimentRoutes);
+
+// NEW: Edge Server routes
+app.use("/api/edge", edgeRoutes);
 
 // Redirect backend root to frontend landing page
 app.get("/", (req, res) => {

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
@@ -16,6 +15,7 @@ import {
   X,
   PanelLeftClose,
   PanelLeftOpen,
+  Server,
 } from "lucide-react";
 
 const menuItems = [
@@ -36,19 +36,14 @@ const menuItems = [
     icon: Network,
   },
   {
-    name: "Adaptive Quality",
-    path: "/dashboard/video-quality",
-    icon: SlidersHorizontal,
+    name: "Edge Server",
+    path: "/dashboard/edge",
+    icon: Server,
   },
   {
     name: "Cache Analytics",
     path: "/dashboard/cache-analytics",
     icon: Database,
-  },
-  {
-    name: "Performance Comparison",
-    path: "/dashboard/comparison",
-    icon: GitCompareArrows,
   },
   {
     name: "Session History",

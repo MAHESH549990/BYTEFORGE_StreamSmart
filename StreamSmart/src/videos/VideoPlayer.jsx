@@ -136,7 +136,12 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
         setSelectedVideo(null);
 
         const response = await fetch(
-          `${API_URL}/api/videos/${videoId}`
+          `${API_URL}/api/videos/${videoId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
 
         const data = await response.json();
@@ -200,22 +205,38 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
     // Use selected video's URL. Demo is only for normal player mode.
     const videoUrl = selectedVideo
-      ? selectedVideo.videoUrl
-      : DEMO_VIDEO;
+  ? selectedVideo.videoUrl
+  : DEMO_VIDEO;
 
-    if (!videoUrl) {
-      setLoading(false);
-      setError("Selected video URL is missing.");
-      return;
-    }
+if (!videoUrl) {
+  setLoading(false);
+  setError("Selected video URL is missing.");
+  return;
+}
 
-    const sourceUrl = videoUrl.startsWith("/")
+  const isHls =
+    selectedVideo?.format === "hls" ||
+    videoUrl.toLowerCase().split("?")[0].endsWith(".m3u8");
+
+  const edgeEligible =
+    Boolean(selectedVideo?._id) &&
+    isHls &&
+    /^https?:\/\//i.test(videoUrl);
+
+  const sourceUrl = edgeEligible
+    ? `${API_URL}/api/edge/${selectedVideo._id}/manifest`
+    : videoUrl.startsWith("/")
       ? `${API_URL}${videoUrl}`
       : videoUrl;
 
-    const isHls =
-      selectedVideo?.format === "hls" ||
-      sourceUrl.toLowerCase().split("?")[0].endsWith(".m3u8");
+  console.log("Loading video:", selectedVideo?.title || "Demo Video");
+
+  console.log(
+    "Streaming route:",
+    edgeEligible ? "StreamSmart Edge Server" : "Direct Origin"
+  );
+
+  console.log("Video source:", sourceUrl);
 
     console.log("Loading video:", selectedVideo?.title || "Demo Video");
     console.log("Video source:", sourceUrl);
@@ -520,14 +541,39 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     video.addEventListener("error", handleError);
 
     if (isHls) {
-      if (Hls.isSupported()) {
-        hls = new Hls({
-            enableWorker: true,
-            capLevelToPlayerSize: true,
+          if (Hls.isSupported()) {
+          hls = new Hls({
+  enableWorker: true,
+  capLevelToPlayerSize: true,
 
-            // Apply simulated bandwidth, latency and packet loss.
-            loader: SimulatedNetworkLoader,
-          });
+  loader: SimulatedNetworkLoader,
+
+  xhrSetup: (xhr, url) => {
+    try {
+      const requestOrigin = new URL(
+        url,
+        window.location.href
+      ).origin;
+
+      const backendOrigin = new URL(API_URL).origin;
+
+      // Send JWT only to our own backend Edge Server.
+      // Do not send authentication headers to public HLS providers.
+      if (requestOrigin === backendOrigin) {
+        const token = localStorage.getItem("token");
+
+            if (token) {
+              xhr.setRequestHeader(
+                "Authorization",
+                `Bearer ${token}`
+              );
+              }
+            }
+          } catch (error) {
+            console.error("Unable to configure HLS request:", error);
+          }
+        },
+      });
 
         hlsRef.current = hls;
 
@@ -654,15 +700,22 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
         });
 
         // HLS errors
-        hls.on(Hls.Events.ERROR, (_, data) => {
-          console.log("HLS error:", data);
+           hls.on(Hls.Events.ERROR, (_, data) => {
+            console.error("HLS error details:", {
+              type: data.type,
+              details: data.details,
+              reason: data.reason,
+              fatal: data.fatal,
+              response: data.response,
+              url: data.url,
+            });
 
-          if (data.fatal) {
-            setLoading(false);
+            if (data.fatal) {
+              setLoading(false);
 
-            setError(
-              "Unable to load HLS stream. Please try another video."
-            );
+              setError(
+                `HLS Error: ${data.details || data.type}. Check the video URL and network requests.`
+              );
 
             if (experimentRunningRef.current) {
               clearInterval(experimentTimerRef.current);
