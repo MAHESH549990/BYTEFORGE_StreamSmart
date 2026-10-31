@@ -1,4 +1,3 @@
-
 import { Routes, Route } from "react-router-dom";
 
 import UserDashboard from "./Dashboard/UserDashboard.jsx";
@@ -20,6 +19,10 @@ import Login from "./form/login";
 import Register from "./form/register";
 import UserProfile from "./form/userprofile";
 
+// NEW INFORMATION PAGES
+import About from "./pages/About";
+import Security from "./pages/Security";
+
 import Dashboard from "./Dashboard/index.jsx";
 import VideoPlayer from "./videos/VideoPlayer.jsx";
 
@@ -28,20 +31,32 @@ import "./App.css";
 function App() {
   return (
     <div className="app-layout">
+
       <FlashMessage />
 
       <Navbar />
 
       <div className="route-content">
+
         <Routes>
+
           {/* Public Pages */}
           <Route path="/" element={<LandingPage />} />
+
           <Route path="/register" element={<Register />} />
+
           <Route path="/login" element={<Login />} />
+
           <Route path="/profile" element={<UserProfile />} />
+
+          {/* NEW INFORMATION PAGES */}
+          <Route path="/about" element={<About />} />
+
+          <Route path="/security" element={<Security />} />
 
           {/* User Dashboard */}
           <Route path="/dashboard" element={<UserDashboard />}>
+
             <Route index element={<DashboardHome />} />
 
             <Route path="videos" element={<VideoLibrary />} />
@@ -66,13 +81,11 @@ function App() {
 
             <Route path="history" element={<TestHistory />} />
 
-            {/* Experiment configuration */}
             <Route
               path="experiment"
               element={<ExperimentPage />}
             />
 
-            {/* Experiment execution */}
             <Route
               path="experiment/run"
               element={<ExperimentRunner />}
@@ -87,6 +100,7 @@ function App() {
                 </div>
               }
             />
+
           </Route>
 
           {/* Admin Dashboard */}
@@ -102,10 +116,14 @@ function App() {
               </div>
             }
           />
+
         </Routes>
+
       </div>
 
+      {/* Global Footer */}
       <Footer />
+
     </div>
   );
 }
