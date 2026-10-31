@@ -1,38 +1,6 @@
-
 /* ========================================
-   1. GLOBAL STYLES
+   GLOBAL STYLES
 ======================================== */
-
-/* Remove default link underline */
-.site-shell a,
-.site-shell a:link,
-.site-shell a:visited,
-.site-shell a:hover,
-.site-shell a:active {
-  text-decoration: none !important;
-}
-
-/* Keep navbar links clean */
-.nav-links a {
-  text-decoration: none !important;
-}
-
-/* Brand styling */
-.brand {
-  text-decoration: none !important;
-}
-
-/* Buttons */
-.nav-cta,
-.button {
-  text-decoration: none !important;
-}
-
-/* Feature links */
-.feature-card a,
-.text-link {
-  text-decoration: none !important;
-}
 
 * {
   box-sizing: border-box;
@@ -65,14 +33,21 @@ a {
     #080d18;
 }
 
+.site-shell a,
+.site-shell a:link,
+.site-shell a:visited,
+.site-shell a:hover,
+.site-shell a:active {
+  text-decoration: none !important;
+}
+
 .container {
   width: min(1160px, calc(100% - 48px));
   margin: auto;
 }
 
-
 /* ========================================
-   2. NAVBAR
+   NAVBAR
 ======================================== */
 
 .navbar {
@@ -82,8 +57,6 @@ a {
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-
-/* Brand Logo */
 
 .brand {
   font: 700 22px "Space Grotesk";
@@ -105,15 +78,13 @@ a {
   background: linear-gradient(135deg, #56d9ff, #5577ff);
   display: grid;
   place-items: center;
-  color: #ffffff;
+  color: #fff;
   font-size: 15px;
 }
 
 .brand-mark i {
-  color: #ffffff;
+  color: #fff;
 }
-
-/* Navigation Links */
 
 .nav-links {
   display: flex;
@@ -122,12 +93,15 @@ a {
   font-size: 13px;
 }
 
-.nav-links a:hover,
-.text-link:hover {
-  color: #ffffff;
+.nav-links a {
+  text-decoration: none !important;
+  transition: color 0.2s ease;
 }
 
-/* Navbar CTA */
+.nav-links a:hover,
+.text-link:hover {
+  color: #fff;
+}
 
 .nav-cta {
   border: 1px solid #33445d;
@@ -141,9 +115,8 @@ a {
   margin-left: 8px;
 }
 
-
 /* ========================================
-   3. HERO SECTION
+   HERO SECTION
 ======================================== */
 
 .hero {
@@ -155,8 +128,6 @@ a {
   padding-top: 40px;
   padding-bottom: 54px;
 }
-
-/* Eyebrow */
 
 .eyebrow {
   font-size: 10px;
@@ -177,8 +148,6 @@ a {
   box-shadow: 0 0 12px #54e6b2;
 }
 
-/* Hero Heading */
-
 .hero h1,
 .section h2,
 .workflow h2,
@@ -196,16 +165,12 @@ a {
   color: #66d9ff;
 }
 
-/* Hero Description */
-
 .hero-text {
   font-size: 16px;
   line-height: 1.8;
   color: #9ba9bf;
   max-width: 465px;
 }
-
-/* Hero Buttons */
 
 .hero-actions {
   display: flex;
@@ -228,6 +193,12 @@ a {
   background: linear-gradient(110deg, #5bdcff, #6687ff);
   color: #07111f;
   box-shadow: 0 10px 35px #367bd52b;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px #367bd555;
 }
 
 .primary span {
@@ -243,8 +214,6 @@ a {
   color: #65d9ff;
   margin-left: 5px;
 }
-
-/* Trust Row */
 
 .trust-row {
   display: flex;
@@ -281,295 +250,418 @@ a {
   background: #315b5d;
 }
 
-
 /* ========================================
-   4. STREAMING DASHBOARD PREVIEW
+   ANIMATED GLOBE
 ======================================== */
 
-.visual-wrap {
+.ss-globe-wrap {
   position: relative;
-  min-height: 410px;
+  min-height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
+  isolation: isolate;
 }
 
-/* Background Glow */
-
-.glow {
-  position: absolute;
-  width: 390px;
-  height: 330px;
-  background: #126bb5;
-  filter: blur(110px);
-  opacity: 0.2;
-}
-
-/* Player Card */
-
-.player-card {
-  z-index: 1;
-  width: min(100%, 510px);
-  padding: 12px;
-  border: 1px solid #26364e;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #17253a, #0d1728);
-  box-shadow: 0 30px 80px #0008;
-  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
-}
-
-.player-top,
-.player-controls {
+.ss-globe-visual {
+  width: 100%;
+  max-width: 550px;
+  height: 470px;
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  color: #8fa1ba;
-  font-size: 9px;
-  letter-spacing: 1px;
-  padding: 4px 5px 12px;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(20, 91, 160, 0.18),
+      transparent 60%
+    );
 }
 
-.player-top > span:first-child {
+.ss-globe-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(90, 180, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(90, 180, 255, 0.08) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: radial-gradient(ellipse, #000 20%, transparent 75%);
+}
+
+.ss-globe-stage {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ss-globe-float 7s ease-in-out infinite;
+}
+
+.ss-globe-halo {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: #0879d9;
+  filter: blur(85px);
+  opacity: 0.19;
+  animation: ss-halo-pulse 5s ease-in-out infinite;
+}
+
+.ss-globe-sphere {
+  width: 285px;
+  height: 285px;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      rgba(67, 185, 255, 0.32),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 68% 72%,
+      rgba(17, 94, 190, 0.42),
+      transparent 45%
+    ),
+    linear-gradient(140deg, #102e58, #071426 75%);
+  border: 1px solid rgba(92, 199, 255, 0.6);
+  box-shadow:
+    inset -25px -10px 55px rgba(0, 0, 0, 0.65),
+    inset 12px 5px 40px rgba(76, 195, 255, 0.2),
+    0 0 35px rgba(36, 156, 255, 0.25),
+    0 0 90px rgba(25, 116, 220, 0.15);
+  animation: ss-sphere-glow 5s ease-in-out infinite;
+}
+
+.ss-globe-surface {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0.9;
+  background-image:
+    radial-gradient(ellipse at 30% 25%, rgba(70, 220, 255, 0.5), transparent 22%),
+    radial-gradient(ellipse at 70% 40%, rgba(45, 143, 255, 0.3), transparent 25%),
+    radial-gradient(ellipse at 40% 75%, rgba(31, 126, 225, 0.32), transparent 28%);
+}
+
+.ss-globe-dots {
+  position: absolute;
+  inset: 0;
+  opacity: 0.75;
+  background-image: radial-gradient(
+    circle,
+    rgba(105, 219, 255, 0.9) 1px,
+    transparent 1.8px
+  );
+  background-size: 13px 13px;
+  mask-image: radial-gradient(ellipse, #000 25%, transparent 73%);
+}
+
+.ss-globe-lat,
+.ss-globe-long {
+  position: absolute;
+  border: 1px solid rgba(95, 211, 255, 0.27);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ss-globe-lat {
+  left: -4%;
+  width: 108%;
+  height: 35%;
+}
+
+.ss-lat-one {
+  top: 16%;
+}
+
+.ss-lat-two {
+  top: 33%;
+}
+
+.ss-lat-three {
+  top: 50%;
+}
+
+.ss-globe-long {
+  top: -3%;
+  left: 24%;
+  width: 52%;
+  height: 106%;
+}
+
+.ss-long-two {
+  left: 5%;
+  width: 90%;
+}
+
+.ss-long-three {
+  left: 43%;
+  width: 14%;
+}
+
+.ss-globe-routes {
+  position: absolute;
+  inset: -23%;
+  width: 146%;
+  height: 146%;
+  z-index: 3;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ss-route-line {
+  animation: ss-route-flow 5s linear infinite;
+}
+
+.ss-route-two {
+  animation-delay: -1.5s;
+}
+
+.ss-route-three {
+  animation-delay: -3s;
+}
+
+.ss-globe-node {
+  position: absolute;
+  z-index: 4;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #73edff;
+  box-shadow:
+    0 0 8px #54dcff,
+    0 0 20px #54dcff;
+}
+
+.ss-node-one {
+  top: 28%;
+  left: 22%;
+  animation: ss-node-pulse 2s infinite;
+}
+
+.ss-node-two {
+  top: 51%;
+  right: 19%;
+  animation: ss-node-pulse 2s 0.7s infinite;
+}
+
+.ss-node-three {
+  bottom: 20%;
+  left: 45%;
+  animation: ss-node-pulse 2s 1.3s infinite;
+}
+
+/* Orbit rings */
+
+.ss-globe-orbit {
+  position: absolute;
+  width: 365px;
+  height: 125px;
+  border: 1px solid rgba(91, 205, 255, 0.24);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ss-orbit-one {
+  transform: rotate(-25deg);
+}
+
+.ss-orbit-two {
+  transform: rotate(48deg);
+  border-color: rgba(92, 134, 255, 0.23);
+}
+
+.ss-orbit-three {
+  width: 390px;
+  height: 165px;
+  transform: rotate(75deg);
+  border-color: rgba(76, 199, 255, 0.13);
+}
+
+/* Location tags */
+
+.ss-globe-tag {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid rgba(95, 197, 255, 0.27);
+  border-radius: 7px;
+  background: rgba(8, 24, 44, 0.86);
+  color: #c5eaff;
+  font: 600 8px "DM Sans";
+  letter-spacing: 1px;
+  box-shadow: 0 8px 25px #0005;
+  backdrop-filter: blur(12px);
+}
+
+.ss-globe-tag span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5be8c0;
+  box-shadow: 0 0 9px #5be8c0;
+}
+
+.ss-tag-india {
+  left: 0;
+  top: 29%;
+}
+
+.ss-tag-singapore {
+  right: 0;
+  top: 53%;
+}
+
+.ss-tag-origin {
+  right: 7%;
+  bottom: 15%;
+}
+
+/* Particles */
+
+.ss-globe-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ss-globe-particles span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: #7be5ff;
+  box-shadow: 0 0 10px #53caff;
+  opacity: 0;
+  animation: ss-particle-drift 7s linear infinite;
+}
+
+/* Globe caption */
+
+.ss-globe-caption {
+  position: absolute;
+  bottom: 17px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #8ca9c8;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+.ss-globe-caption > div {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.quality {
-  color: #dbeaff;
-}
-
-.quality b {
-  color: #65dfff;
-}
-
-/* Video Scene */
-
-.video-scene {
-  height: 260px;
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  background: linear-gradient(
-    180deg,
-    #163d62 0%,
-    #4d7790 48%,
-    #e39a69 100%
-  );
-}
-
-.scene-sun {
-  position: absolute;
-  width: 65px;
-  height: 65px;
+.ss-caption-indicator {
+  width: 6px;
+  height: 6px;
+  background: #53e6b5;
   border-radius: 50%;
-  background: #ffd8a0;
-  filter: blur(2px);
-  right: 23%;
-  top: 23%;
+  box-shadow: 0 0 9px #53e6b5;
 }
 
-/* Mountains */
-
-.mountain {
-  position: absolute;
-  bottom: -30px;
-  width: 120%;
-  height: 160px;
-  clip-path: polygon(
-    0 70%,
-    20% 18%,
-    35% 54%,
-    52% 0,
-    70% 58%,
-    84% 20%,
-    100% 70%,
-    100% 100%,
-    0 100%
-  );
+.ss-caption-status {
+  color: #5edcff;
 }
 
-.mountain.back {
-  background: #304f62;
-  opacity: 0.8;
+/* Globe animations */
+
+@keyframes ss-globe-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
-.mountain.front {
-  background: #142d3d;
-  transform: scale(1.2);
-  transform-origin: bottom;
+@keyframes ss-halo-pulse {
+  0%, 100% {
+    opacity: 0.14;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 0.27;
+    transform: scale(1.12);
+  }
 }
 
-/* Play Button */
+@keyframes ss-sphere-glow {
+  0%, 100% {
+    box-shadow:
+      inset -25px -10px 55px rgba(0, 0, 0, 0.65),
+      inset 12px 5px 40px rgba(76, 195, 255, 0.2),
+      0 0 35px rgba(36, 156, 255, 0.25);
+  }
 
-.play-button {
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  transform: translate(-50%, -50%);
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  padding-left: 4px;
-  color: #ffffff;
-  background: #ffffff2b;
-  border: 1px solid #ffffff8a;
-  backdrop-filter: blur(8px);
-  font-size: 15px;
+  50% {
+    box-shadow:
+      inset -25px -10px 55px rgba(0, 0, 0, 0.65),
+      inset 12px 5px 40px rgba(76, 195, 255, 0.3),
+      0 0 55px rgba(36, 156, 255, 0.42);
+  }
 }
 
-/* Scene Caption */
-
-.scene-caption {
-  position: absolute;
-  left: 20px;
-  bottom: 17px;
-  display: grid;
-  gap: 5px;
-  text-shadow: 0 2px 8px #000;
+@keyframes ss-route-flow {
+  to {
+    stroke-dashoffset: -50;
+  }
 }
 
-.scene-caption small {
-  font-size: 8px;
-  letter-spacing: 2px;
-  color: #d8f3ff;
+@keyframes ss-node-pulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
 }
 
-.scene-caption strong {
-  font: 600 20px "Space Grotesk";
+@keyframes ss-particle-drift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 15px, 0);
+  }
+
+  20% {
+    opacity: 0.8;
+  }
+
+  80% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(20px, -65px, 0);
+  }
 }
-
-/* Player Controls */
-
-.player-controls {
-  padding: 12px 5px 2px;
-  gap: 13px;
-}
-
-.timeline {
-  height: 3px;
-  background: #34455b;
-  flex: 1;
-  border-radius: 5px;
-}
-
-.timeline i {
-  display: block;
-  width: 35%;
-  height: 100%;
-  background: #65d9ff;
-  border-radius: 5px;
-}
-
 
 /* ========================================
-   5. FLOATING ANALYTICS CARDS
-======================================== */
-
-.floating-card {
-  position: absolute;
-  z-index: 2;
-  background: #101d30ed;
-  border: 1px solid #2c405b;
-  border-radius: 12px;
-  padding: 15px 17px;
-  box-shadow: 0 15px 45px #0008;
-  backdrop-filter: blur(12px);
-}
-
-/* Network Speed Card */
-
-.speed-card {
-  right: -7px;
-  top: 65px;
-  width: 166px;
-}
-
-/* Buffer Health Card */
-
-.buffer-card {
-  left: -15px;
-  bottom: 48px;
-  width: 154px;
-}
-
-/* Card Content */
-
-.mini-label {
-  display: block;
-  color: #8094af;
-  font-size: 8px;
-  letter-spacing: 1.4px;
-}
-
-.floating-card strong {
-  display: block;
-  font: 600 25px "Space Grotesk";
-  margin: 8px 0;
-}
-
-.floating-card strong small,
-.floating-card strong span {
-  font: 500 11px "DM Sans";
-  color: #a9bad0;
-}
-
-/* Speed Graph */
-
-.sparkline {
-  height: 24px;
-  display: flex;
-  align-items: end;
-  gap: 4px;
-  margin: 8px 0;
-}
-
-.sparkline i {
-  width: 8px;
-  border-radius: 3px 3px 0 0;
-  background: #51cfff;
-  height: 45%;
-}
-
-.sparkline i:nth-child(3n) {
-  height: 85%;
-}
-
-.sparkline i:nth-child(2n) {
-  height: 65%;
-}
-
-.sparkline i:nth-child(5n) {
-  height: 100%;
-}
-
-.positive {
-  font-size: 9px;
-  color: #61e5b5;
-}
-
-/* Buffer Progress */
-
-.buffer-track {
-  height: 5px;
-  background: #26384d;
-  border-radius: 5px;
-  margin: 12px 0 8px;
-}
-
-.buffer-track i {
-  display: block;
-  width: 98%;
-  height: 100%;
-  background: linear-gradient(90deg, #4bd9c1, #67dfff);
-  border-radius: 5px;
-}
-
-
-/* ========================================
-   6. METRICS SECTION
+   METRICS SECTION
 ======================================== */
 
 .metrics {
@@ -611,9 +703,8 @@ a {
   font-size: 9px;
 }
 
-
 /* ========================================
-   7. FEATURES SECTION
+   FEATURES SECTION
 ======================================== */
 
 .section {
@@ -646,8 +737,6 @@ a {
   font-size: 14px;
 }
 
-/* Feature Grid */
-
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -660,9 +749,13 @@ a {
   border-radius: 13px;
   background: linear-gradient(145deg, #111e30, #0b1422);
   min-height: 220px;
+  transition: transform 0.25s ease, border-color 0.25s ease;
 }
 
-/* Feature Icon */
+.feature-card:hover {
+  transform: translateY(-5px);
+  border-color: #367ba8;
+}
 
 .feature-icon {
   width: 39px;
@@ -674,8 +767,6 @@ a {
   place-items: center;
   font-size: 23px;
 }
-
-/* Feature Content */
 
 .feature-card h3,
 .step h3 {
@@ -697,9 +788,8 @@ a {
   font-size: 11px;
 }
 
-
 /* ========================================
-   8. HOW IT WORKS SECTION
+   HOW IT WORKS
 ======================================== */
 
 .workflow {
@@ -723,8 +813,6 @@ a {
 .workflow-inner > div:first-child > p {
   max-width: 390px;
 }
-
-/* Workflow Steps */
 
 .steps {
   display: grid;
@@ -752,9 +840,8 @@ a {
   margin: 0;
 }
 
-
 /* ========================================
-   9. FINAL CALL TO ACTION
+   FINAL CTA
 ======================================== */
 
 .final-cta {
@@ -769,9 +856,8 @@ a {
   margin-bottom: 0;
 }
 
-
 /* ========================================
-   10. FOOTER
+   FOOTER
 ======================================== */
 
 .footer {
@@ -799,9 +885,8 @@ a {
   color: #a8b8cb;
 }
 
-
 /* ========================================
-   11. TABLET RESPONSIVE DESIGN
+   TABLET RESPONSIVE
 ======================================== */
 
 @media (max-width: 800px) {
@@ -830,16 +915,12 @@ a {
     justify-content: center;
   }
 
-  .visual-wrap {
-    min-height: 390px;
+  .ss-globe-wrap {
+    min-height: 430px;
   }
 
-  .speed-card {
-    right: 0;
-  }
-
-  .buffer-card {
-    left: 0;
+  .ss-globe-visual {
+    max-width: 520px;
   }
 
   .metrics {
@@ -871,9 +952,8 @@ a {
   }
 }
 
-
 /* ========================================
-   12. MOBILE RESPONSIVE DESIGN
+   MOBILE RESPONSIVE
 ======================================== */
 
 @media (max-width: 520px) {
@@ -895,30 +975,40 @@ a {
     gap: 17px;
   }
 
-  .visual-wrap {
-    min-height: 330px;
+  .ss-globe-wrap {
+    min-height: 350px;
   }
 
-  .video-scene {
-    height: 205px;
+  .ss-globe-visual {
+    height: 350px;
   }
 
-  .player-card {
-    padding: 8px;
+  .ss-globe-stage {
+    transform: scale(0.77);
   }
 
-  .speed-card {
-    top: 15px;
+  .ss-globe-caption {
+    width: 90%;
+    font-size: 7px;
+    bottom: 8px;
+  }
+
+  .ss-globe-tag {
+    font-size: 7px;
+    padding: 7px 8px;
+  }
+
+  .ss-tag-india {
+    left: -3px;
+  }
+
+  .ss-tag-singapore {
     right: -3px;
-    transform: scale(0.86);
-    transform-origin: top right;
   }
 
-  .buffer-card {
-    bottom: 10px;
-    left: -5px;
-    transform: scale(0.86);
-    transform-origin: bottom left;
+  .ss-tag-origin {
+    right: 0;
+    bottom: 13%;
   }
 
   .metrics {
@@ -960,5 +1050,29 @@ a {
   .metrics p {
     font-size: 8px;
   }
+}
 
+/* ========================================
+   REDUCED MOTION ACCESSIBILITY
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ss-globe-stage,
+  .ss-globe-halo,
+  .ss-globe-sphere,
+  .ss-route-line,
+  .ss-globe-node,
+  .ss-globe-particles span {
+    animation: none !important;
+  }
+
+  .feature-card,
+  .primary {
+    transition: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }
