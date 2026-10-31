@@ -205,41 +205,55 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
     // Use selected video's URL. Demo is only for normal player mode.
     const videoUrl = selectedVideo
-  ? selectedVideo.videoUrl
-  : DEMO_VIDEO;
+      ? selectedVideo.videoUrl?.trim()
+      : DEMO_VIDEO;
 
-if (!videoUrl) {
-  setLoading(false);
-  setError("Selected video URL is missing.");
-  return;
-}
+    if (!videoUrl) {
+      setLoading(false);
+      setError("Selected video URL is missing.");
+      return;
+    }
 
-  const isHls =
-    selectedVideo?.format === "hls" ||
-    videoUrl.toLowerCase().split("?")[0].endsWith(".m3u8");
+    // Detect HLS format.
+    const isHls =
+      selectedVideo?.format?.toLowerCase() === "hls" ||
+      /\.m3u8(?:$|[?#])/i.test(videoUrl);
 
-  const edgeEligible =
-    Boolean(selectedVideo?._id) &&
-    isHls &&
-    /^https?:\/\//i.test(videoUrl);
+    // Detect local backend uploads.
+    const isLocalUpload =
+      videoUrl.startsWith("/uploads/") ||
+      videoUrl.startsWith("uploads/");
 
-  const sourceUrl = edgeEligible
-    ? `${API_URL}/api/edge/${selectedVideo._id}/manifest`
-    : videoUrl.startsWith("/")
-      ? `${API_URL}${videoUrl}`
-      : videoUrl;
+    // Detect absolute HTTP/HTTPS URLs.
+    const isAbsoluteUrl = /^https?:\/\//i.test(videoUrl);
 
-  console.log("Loading video:", selectedVideo?.title || "Demo Video");
+    // Local uploaded videos should be served by Express.
+    const normalizedVideoUrl = isLocalUpload
+      ? `${API_URL}/${videoUrl.replace(/^\/+/, "")}`
+      : isAbsoluteUrl
+        ? videoUrl
+        : `${API_URL}/${videoUrl.replace(/^\/+/, "")}`;
 
-  console.log(
-    "Streaming route:",
-    edgeEligible ? "StreamSmart Edge Server" : "Direct Origin"
-  );
+    // Temporarily use the Edge Server only for externally hosted HLS.
+    const edgeEligible =
+      Boolean(selectedVideo?._id) &&
+      isHls &&
+      isAbsoluteUrl &&
+      !isLocalUpload;
 
-  console.log("Video source:", sourceUrl);
+    const sourceUrl = edgeEligible
+      ? `${API_URL}/api/edge/${selectedVideo._id}/manifest`
+      : normalizedVideoUrl;
 
-    console.log("Loading video:", selectedVideo?.title || "Demo Video");
-    console.log("Video source:", sourceUrl);
+    console.log("VIDEO DEBUG:", {
+      title: selectedVideo?.title || "Demo Video",
+      videoUrl,
+      format: selectedVideo?.format,
+      isHls,
+      isLocalUpload,
+      edgeEligible,
+      sourceUrl,
+    });
 
     const updateMetrics = () => {
       telemetry.updateBuffer(video);
@@ -509,6 +523,12 @@ if (!videoUrl) {
     };
 
     const handleError = () => {
+      console.error("HTML5 VIDEO ERROR:", {
+        code: video.error?.code,
+        message: video.error?.message,
+        currentSrc: video.currentSrc,
+      });
+
       setLoading(false);
       setError("Unable to play this video. Check its URL or format.");
 
@@ -541,39 +561,38 @@ if (!videoUrl) {
     video.addEventListener("error", handleError);
 
     if (isHls) {
-          if (Hls.isSupported()) {
-          hls = new Hls({
-  enableWorker: true,
-  capLevelToPlayerSize: true,
+      if (Hls.isSupported()) {
+        hls = new Hls({
+          enableWorker: true,
+          capLevelToPlayerSize: true,
 
-  loader: SimulatedNetworkLoader,
+          loader: SimulatedNetworkLoader,
 
-  xhrSetup: (xhr, url) => {
-    try {
-      const requestOrigin = new URL(
-        url,
-        window.location.href
-      ).origin;
+          // Updated HLS authentication configuration.
+          xhrSetup: (xhr, url) => {
+            const requestOrigin = new URL(
+              url,
+              window.location.href
+            ).origin;
 
-      const backendOrigin = new URL(API_URL).origin;
+            const backendOrigin = new URL(
+              API_URL,
+              window.location.href
+            ).origin;
 
-      // Send JWT only to our own backend Edge Server.
-      // Do not send authentication headers to public HLS providers.
-      if (requestOrigin === backendOrigin) {
-        const token = localStorage.getItem("token");
+            // Send authentication only to our backend.
+            if (requestOrigin === backendOrigin) {
+              const token = localStorage.getItem("token");
 
-            if (token) {
-              xhr.setRequestHeader(
-                "Authorization",
-                `Bearer ${token}`
-              );
+              if (token) {
+                xhr.setRequestHeader(
+                  "Authorization",
+                  `Bearer ${token}`
+                );
               }
             }
-          } catch (error) {
-            console.error("Unable to configure HLS request:", error);
-          }
-        },
-      });
+          },
+        });
 
         hlsRef.current = hls;
 
@@ -700,22 +719,22 @@ if (!videoUrl) {
         });
 
         // HLS errors
-           hls.on(Hls.Events.ERROR, (_, data) => {
-            console.error("HLS error details:", {
-              type: data.type,
-              details: data.details,
-              reason: data.reason,
-              fatal: data.fatal,
-              response: data.response,
-              url: data.url,
-            });
+        hls.on(Hls.Events.ERROR, (_, data) => {
+          console.error("HLS error details:", {
+            type: data.type,
+            details: data.details,
+            reason: data.reason,
+            fatal: data.fatal,
+            response: data.response,
+            url: data.url,
+          });
 
-            if (data.fatal) {
-              setLoading(false);
+          if (data.fatal) {
+            setLoading(false);
 
-              setError(
-                `HLS Error: ${data.details || data.type}. Check the video URL and network requests.`
-              );
+            setError(
+              `HLS Error: ${data.details || data.type}. Check the video URL and network requests.`
+            );
 
             if (experimentRunningRef.current) {
               clearInterval(experimentTimerRef.current);
@@ -1364,9 +1383,9 @@ if (!videoUrl) {
           <div className="metric-card">
             <span>Estimated Throughput</span>
             <strong>
-               {metrics.estimatedThroughput
-                  ? `${(metrics.estimatedThroughput / 1000).toFixed(2)} Mbps`
-                  : "--"}
+              {metrics.estimatedThroughput
+                ? `${(metrics.estimatedThroughput / 1000).toFixed(2)} Mbps`
+                : "--"}
             </strong>
           </div>
 
