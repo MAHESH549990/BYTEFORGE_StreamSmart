@@ -50,11 +50,6 @@ const menuItems = [
     path: "/dashboard/history",
     icon: History,
   },
-  {
-    name: "Settings",
-    path: "/dashboard/settings",
-    icon: Settings,
-  },
 ];
 
 export default function DashboardSidebar() {
