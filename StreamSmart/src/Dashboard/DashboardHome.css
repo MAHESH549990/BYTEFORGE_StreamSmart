@@ -1,146 +1,673 @@
 
-/* =====================================
-   STREAMSMART - DASHBOARD HOME
-===================================== */
+/* =====================================================
+   STREAMSMART — PREMIUM DASHBOARD HOME
+   Modern UI | Animations | Statistics | Feature Cards
+===================================================== */
+
+/* =====================================================
+   1. GLOBAL DASHBOARD HOME
+===================================================== */
 
 .dashboard-home {
   width: 100%;
   max-width: 100%;
   min-width: 0;
+
   color: #172033;
   font-family: inherit;
+
+  box-sizing: border-box;
 }
 
-/* Page heading */
+.dashboard-home *,
+.dashboard-home *::before,
+.dashboard-home *::after {
+  box-sizing: border-box;
+}
+
+/* =====================================================
+   2. ANIMATIONS
+===================================================== */
+
+@keyframes homeFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes homeFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes homeGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes iconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes homeSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes softPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.12);
+  }
+
+  50% {
+    box-shadow: 0 0 0 7px rgba(59, 130, 246, 0);
+  }
+}
+
+/* =====================================================
+   3. PAGE HEADING
+===================================================== */
 
 .dashboard-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   gap: 24px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
+
+  animation: homeFadeUp 0.55s ease both;
 }
 
 .page-label {
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  margin-bottom: 8px;
+  display: inline-block;
+
+  color: #2563eb;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+
+  margin-bottom: 10px;
 }
 
 .dashboard-heading h1 {
-  color: #172033;
-  font-size: 29px;
-  font-weight: 700;
-  letter-spacing: -0.8px;
-  margin: 0 0 8px;
+  color: #101828;
+
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 800;
+  letter-spacing: -1.2px;
+
+  margin: 0 0 9px;
 }
 
 .dashboard-intro {
-  color: #64748b;
-  font-size: 13px;
-  line-height: 1.7;
-  margin: 0;
   max-width: 620px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.8;
+
+  margin: 0;
 }
 
-/* Start test button */
+/* =====================================================
+   4. HEADER ACTIONS
+===================================================== */
+
+.dashboard-heading-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Start Test Button */
 
 .start-test-btn {
+  position: relative;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
+
   flex-shrink: 0;
-  padding: 11px 17px;
-  background: #2563eb;
-  color: #fff;
-  border: 1px solid #2563eb;
-  border-radius: 7px;
+
+  padding: 12px 19px;
+
+  color: #ffffff;
+
+  background: linear-gradient(
+    120deg,
+    #2563eb,
+    #4f46e5,
+    #6366f1
+  );
+
+  background-size: 200% 200%;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
   text-decoration: none;
+
   font-size: 13px;
-  font-weight: 600;
-  transition: background 0.2s ease;
+  font-weight: 700;
+
+  box-shadow: 0 5px 16px rgba(37, 99, 235, 0.19);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-position 0.4s ease;
 }
 
 .start-test-btn:hover {
-  background: #1d4ed8;
-  color: #fff;
+  color: #ffffff;
+
+  transform: translateY(-3px);
+
+  background-position: 100% 50%;
+
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
 }
 
-/* Statistics */
+.start-test-btn:active {
+  transform: scale(0.97);
+}
+
+.start-test-btn svg {
+  transition: transform 0.25s ease;
+}
+
+.start-test-btn:hover svg {
+  transform: scale(1.15);
+}
+
+/* Refresh Button */
+
+.dashboard-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 11px 16px;
+
+  color: #475569;
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.dashboard-refresh-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.dashboard-refresh-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.refresh-spinning {
+  animation: homeSpin 1s linear infinite;
+}
+
+/* =====================================================
+   5. DYNAMIC STATISTICS SECTION
+===================================================== */
 
 .dashboard-stats-section {
-  margin-bottom: 32px;
   min-width: 0;
+  margin-bottom: 38px;
+
+  animation: homeFadeUp 0.65s 0.08s both;
 }
 
-/* Sections */
+/* Statistics Grid */
+
+.dynamic-stat-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 18px;
+  width: 100%;
+}
+
+/* Statistic Card */
+
+.dynamic-stat-card {
+  position: relative;
+
+  min-width: 0;
+  padding: 23px;
+
+  background: linear-gradient(
+    145deg,
+    #ffffff,
+    #fbfdff
+  );
+
+  border: 1px solid #e8edf5;
+  border-radius: 16px;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.035);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+
+  animation: homeFadeUp 0.55s ease both;
+}
+
+.dynamic-stat-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.dynamic-stat-card:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.dynamic-stat-card:nth-child(3) {
+  animation-delay: 0.19s;
+}
+
+.dynamic-stat-card:nth-child(4) {
+  animation-delay: 0.26s;
+}
+
+/* Gradient top line */
+
+.dynamic-stat-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #6366f1,
+    #a78bfa
+  );
+
+  transform: scaleX(0);
+  transform-origin: left;
+
+  transition: transform 0.35s ease;
+}
+
+.dynamic-stat-card:hover {
+  transform: translateY(-6px);
+
+  border-color: #dbeafe;
+
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.075);
+}
+
+.dynamic-stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* Statistic Top Row */
+
+.dynamic-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+  margin-bottom: 23px;
+}
+
+/* Statistic Icons */
+
+.dynamic-stat-icon {
+  width: 47px;
+  height: 47px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.dynamic-stat-card:hover .dynamic-stat-icon {
+  transform: scale(1.09) rotate(-5deg);
+
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.07);
+}
+
+.dynamic-stat-icon.stat-blue {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.dynamic-stat-icon.stat-purple {
+  color: #7c3aed;
+  background: #f5f3ff;
+}
+
+.dynamic-stat-icon.stat-orange {
+  color: #ea580c;
+  background: #fff7ed;
+}
+
+.dynamic-stat-icon.stat-green {
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+/* Live Indicator */
+
+.dynamic-stat-indicator {
+  padding: 5px 9px;
+
+  color: #64748b;
+  background: #f1f5f9;
+
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.7px;
+
+  border-radius: 20px;
+}
+
+/* Statistic Text */
+
+.dynamic-stat-title {
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 550;
+
+  margin-bottom: 8px;
+}
+
+.dynamic-stat-value {
+  color: #0f172a;
+
+  font-size: clamp(23px, 2vw, 31px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+
+  margin-bottom: 8px;
+
+  overflow-wrap: anywhere;
+}
+
+.dynamic-stat-description {
+  color: #94a3b8;
+
+  font-size: 11px;
+  line-height: 1.6;
+
+  margin-bottom: 0;
+}
+
+/* Statistics Error */
+
+.dashboard-stats-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  padding: 13px 16px;
+  margin-bottom: 16px;
+
+  color: #b91c1c;
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+
+  font-size: 13px;
+}
+
+.dashboard-stats-error button {
+  color: #b91c1c;
+  background: transparent;
+
+  border: 0;
+
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* =====================================================
+   6. DASHBOARD SECTIONS
+===================================================== */
 
 .dashboard-section {
-  margin-bottom: 30px;
+  margin-bottom: 38px;
+
+  animation: homeFadeUp 0.6s ease both;
 }
+
+.dashboard-section:nth-of-type(3) {
+  animation-delay: 0.08s;
+}
+
+.dashboard-section:nth-of-type(4) {
+  animation-delay: 0.15s;
+}
+
+.dashboard-section:nth-of-type(5) {
+  animation-delay: 0.22s;
+}
+
+/* Section Heading */
 
 .dashboard-section-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+
+  margin-bottom: 19px;
 }
 
 .dashboard-section-heading h2 {
   color: #172033;
-  font-size: 17px;
-  font-weight: 700;
-  margin: 0 0 5px;
+
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -0.4px;
+
+  margin: 0 0 6px;
 }
 
 .dashboard-section-heading p {
   color: #8490a3;
+
   font-size: 12px;
+  line-height: 1.6;
+
   margin: 0;
 }
 
-/* Cards grid */
+/* =====================================================
+   7. DASHBOARD CONTENT GRID
+===================================================== */
 
 .dashboard-content-grid {
   display: grid;
+
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 17px;
+
+  gap: 19px;
+
   width: 100%;
   min-width: 0;
 }
 
-/* Dashboard cards */
+/* =====================================================
+   8. FEATURE CARDS
+===================================================== */
 
 .dashboard-panel {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
   min-width: 0;
-  padding: 21px;
-  background: #ffffff;
+  min-height: 230px;
+
+  padding: 24px;
+
+  background: linear-gradient(
+    145deg,
+    #ffffff 0%,
+    #fbfdff 100%
+  );
+
   border: 1px solid #e5eaf1;
-  border-radius: 10px;
-  transition: border-color 0.2s ease;
+  border-radius: 15px;
+
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.035);
+
+  overflow: hidden;
+
+  animation: homeFadeUp 0.6s ease both;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.dashboard-panel:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+/* Subtle background glow */
+
+.dashboard-panel::after {
+  content: "";
+
+  position: absolute;
+
+  top: -75px;
+  right: -75px;
+
+  width: 170px;
+  height: 170px;
+
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.075),
+    transparent 70%
+  );
+
+  pointer-events: none;
+
+  transition: transform 0.4s ease;
 }
 
 .dashboard-panel:hover {
-  border-color: #b8c9e3;
+  transform: translateY(-6px);
+
+  border-color: #cbdcf6;
+
+  box-shadow: 0 15px 32px rgba(15, 23, 42, 0.08);
 }
 
+.dashboard-panel:hover::after {
+  transform: scale(1.5);
+}
+
+/* =====================================================
+   9. CARD ICONS
+===================================================== */
+
 .panel-top {
+  position: relative;
+  z-index: 1;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 19px;
+
+  margin-bottom: 22px;
 }
 
 .panel-icon {
-  width: 43px;
-  height: 43px;
+  width: 46px;
+  height: 46px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
+
+  border-radius: 13px;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.dashboard-panel:hover .panel-icon {
+  transform: rotate(-6deg) scale(1.1);
+
+  box-shadow: 0 6px 15px rgba(15, 23, 42, 0.09);
 }
 
 .video-icon {
@@ -149,23 +676,23 @@
 }
 
 .network-icon {
-  color: #0d9488;
-  background: #ecfdf5;
+  color: #0891b2;
+  background: #ecfeff;
 }
 
 .quality-icon {
-  color: #d97706;
-  background: #fffbeb;
-}
-
-.analytics-icon {
   color: #7c3aed;
   background: #f5f3ff;
 }
 
+.analytics-icon {
+  color: #ea580c;
+  background: #fff7ed;
+}
+
 .comparison-icon {
-  color: #2563eb;
-  background: #eff6ff;
+  color: #0d9488;
+  background: #f0fdfa;
 }
 
 .history-icon {
@@ -173,71 +700,170 @@
   background: #f1f5f9;
 }
 
+/* =====================================================
+   10. CARD CATEGORY
+===================================================== */
+
 .panel-category {
-  color: #94a3b8;
+  padding: 6px 9px;
+
+  color: #64748b;
+  background: #f1f5f9;
+
   font-size: 9px;
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: 1px;
+
+  border-radius: 20px;
 }
 
+/* =====================================================
+   11. CARD CONTENT
+===================================================== */
+
 .dashboard-panel h3 {
-  color: #1e293b;
-  font-size: 15px;
-  font-weight: 700;
-  margin: 0 0 8px;
+  position: relative;
+  z-index: 1;
+
+  color: #172033;
+
+  font-size: 16px;
+  font-weight: 750;
+
+  margin: 0 0 9px;
 }
 
 .dashboard-panel > p {
+  position: relative;
+  z-index: 1;
+
   color: #718096;
+
   font-size: 12px;
-  line-height: 1.7;
-  margin: 0 0 20px;
+  line-height: 1.8;
+
+  margin: 0 0 22px;
+
+  flex: 1;
 }
 
-/* Card links */
+/* =====================================================
+   12. CARD LINKS
+===================================================== */
 
 .panel-link {
+  position: relative;
+  z-index: 1;
+
   display: inline-flex;
   align-items: center;
   gap: 8px;
+
+  width: fit-content;
+
   color: #2563eb;
+
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
+
   text-decoration: none;
-  transition: gap 0.2s ease;
+
+  transition:
+    gap 0.25s ease,
+    color 0.25s ease;
 }
 
 .panel-link:hover {
   color: #1d4ed8;
-  gap: 12px;
+  gap: 13px;
 }
 
-/* Experiment banner */
+.panel-link svg {
+  transition: transform 0.25s ease;
+}
+
+.panel-link:hover svg {
+  transform: translateX(3px);
+}
+
+/* =====================================================
+   13. EXPERIMENT BANNER
+===================================================== */
 
 .experiment-banner {
+  position: relative;
+
   display: flex;
   align-items: center;
-  gap: 17px;
-  padding: 21px;
-  margin-top: 8px;
+  gap: 19px;
+
+  padding: 26px 27px;
+
+  margin-top: 10px;
   margin-bottom: 25px;
-  background: #ffffff;
-  border: 1px solid #e5eaf1;
-  border-left: 4px solid #2563eb;
-  border-radius: 9px;
+
+  color: #ffffff;
+
+  background:
+    radial-gradient(
+      circle at 90% 15%,
+      rgba(129, 140, 248, 0.32),
+      transparent 35%
+    ),
+    linear-gradient(
+      115deg,
+      #172b53,
+      #263b78,
+      #43358b
+    );
+
+  background-size: 200% 200%;
+
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  border-radius: 16px;
+
+  overflow: hidden;
+
+  animation: homeFadeUp 0.65s 0.2s both;
+
+  transition:
+    box-shadow 0.3s ease,
+    background-position 0.5s ease;
 }
 
+.experiment-banner:hover {
+  background-position: 100% 50%;
+
+  box-shadow: 0 14px 30px rgba(49, 46, 129, 0.17);
+}
+
+/* Banner Icon */
+
 .experiment-banner-icon {
-  width: 44px;
-  height: 44px;
+  width: 51px;
+  height: 51px;
+
   flex-shrink: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
-  background: #eff6ff;
-  border-radius: 9px;
+
+  color: #ffffff;
+
+  background: rgba(255, 255, 255, 0.13);
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 13px;
+
+  transition: transform 0.3s ease;
 }
+
+.experiment-banner:hover .experiment-banner-icon {
+  transform: rotate(-7deg) scale(1.08);
+}
+
+/* Banner Content */
 
 .experiment-banner-content {
   flex: 1;
@@ -245,35 +871,68 @@
 }
 
 .experiment-banner-content h3 {
-  color: #1e293b;
-  font-size: 14px;
-  font-weight: 700;
-  margin: 0 0 5px;
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 750;
+
+  margin: 0 0 6px;
 }
 
 .experiment-banner-content p {
-  color: #718096;
+  color: #c7d2fe;
+
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.7;
+
   margin: 0;
 }
+
+/* Banner Button */
 
 .experiment-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+
   flex-shrink: 0;
-  color: #2563eb;
+
+  padding: 11px 16px;
+
+  color: #263b78;
+  background: #ffffff;
+
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 9px;
+
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 750;
+
   text-decoration: none;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .experiment-link:hover {
   color: #1d4ed8;
+
+  transform: translateY(-3px);
+
+  box-shadow: 0 7px 17px rgba(0, 0, 0, 0.16);
 }
 
-/* Responsive */
+/* =====================================================
+   14. RESPONSIVE — TABLET
+===================================================== */
+
+@media (max-width: 1100px) {
+  .dynamic-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
 @media (max-width: 900px) {
   .dashboard-heading {
@@ -281,7 +940,11 @@
   }
 
   .dashboard-content-grid {
-    gap: 13px;
+    gap: 14px;
+  }
+
+  .dashboard-panel {
+    padding: 21px;
   }
 
   .dashboard-main {
@@ -289,33 +952,89 @@
   }
 }
 
+/* =====================================================
+   15. RESPONSIVE — MOBILE
+===================================================== */
+
 @media (max-width: 600px) {
   .dashboard-heading {
     flex-direction: column;
-    gap: 16px;
+    align-items: flex-start;
+
+    gap: 17px;
+    margin-bottom: 26px;
   }
 
   .dashboard-heading h1 {
-    font-size: 25px;
+    font-size: 27px;
+  }
+
+  .dashboard-heading-actions {
+    width: 100%;
+  }
+
+  .dashboard-heading-actions > a,
+  .dashboard-heading-actions > button {
+    flex: 1;
   }
 
   .dashboard-content-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .dynamic-stat-grid {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .dynamic-stat-card {
+    padding: 20px;
   }
 
   .dashboard-panel {
-    padding: 18px;
+    min-height: 215px;
+    padding: 20px;
+  }
+
+  .dashboard-section {
+    margin-bottom: 31px;
+  }
+
+  .dashboard-section-heading h2 {
+    font-size: 18px;
   }
 
   .experiment-banner {
     flex-wrap: wrap;
+
+    padding: 22px;
+    gap: 15px;
   }
 
   .experiment-banner-content {
-    flex-basis: calc(100% - 65px);
+    flex-basis: calc(100% - 67px);
   }
 
   .experiment-link {
-    margin-left: 61px;
+    width: 100%;
+  }
+
+  .dashboard-main {
+    padding: 20px 15px;
+  }
+}
+
+/* =====================================================
+   16. ACCESSIBILITY — REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-home *,
+  .dashboard-home *::before,
+  .dashboard-home *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
 }

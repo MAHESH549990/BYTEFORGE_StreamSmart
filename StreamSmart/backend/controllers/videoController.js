@@ -1,16 +1,40 @@
+
 import Video from "../models/Video.js";
 
-// Get all videos
+// Get authenticated user's ID.
+function getUserId(req) {
+  return req.user?._id;
+}
+
+// Get videos belonging to the logged-in user.
+// Shared platform videos remain available to everyone.
 export const getVideos = async (req, res) => {
   try {
-    const videos = await Video.find().sort({ createdAt: -1 });
+    const userId = getUserId(req);
 
-    res.status(200).json({
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please log in to access videos."
+      });
+    }
+
+    const videos = await Video.find({
+      $or: [
+        { owner: userId },
+        { owner: null, sourceType: "platform" }
+      ]
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
       success: true,
       videos
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error("Get videos error:", error);
+
+    return res.status(500).json({
       success: false,
       message: "Unable to fetch videos"
     });
@@ -18,9 +42,18 @@ export const getVideos = async (req, res) => {
 };
 
 
-// Upload a video from computer
+// Upload a video from computer.
 export const uploadVideo = async (req, res) => {
   try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please log in before uploading a video."
+      });
+    }
+
     const { title, description } = req.body;
 
     if (!title || !req.file) {
@@ -30,21 +63,44 @@ export const uploadVideo = async (req, res) => {
       });
     }
 
+    const mimeType = req.file.mimetype;
+
+    const formatMap = {
+      "video/mp4": "mp4",
+      "video/webm": "webm",
+      "video/ogg": "ogg",
+      "application/vnd.apple.mpegurl": "hls",
+      "application/x-mpegURL": "hls"
+    };
+
+    const format = formatMap[mimeType];
+
+    if (!format) {
+      return res.status(400).json({
+        success: false,
+        message: "Unsupported video format."
+      });
+    }
+
     const video = await Video.create({
       title,
       description,
       videoUrl: `/uploads/${req.file.filename}`,
       sourceType: "upload",
-      format: req.file.mimetype.split("/")[1]
+      format,
+      owner: userId
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Video uploaded successfully",
       video
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error("Upload video error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message
     });
@@ -52,9 +108,18 @@ export const uploadVideo = async (req, res) => {
 };
 
 
-// Add an external video URL
+// Add an external video URL.
 export const addExternalVideo = async (req, res) => {
   try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please log in before adding a video."
+      });
+    }
+
     const { title, description, videoUrl } = req.body;
 
     if (!title || !videoUrl) {
@@ -82,8 +147,13 @@ export const addExternalVideo = async (req, res) => {
       });
     }
 
-    const isHls = parsedUrl.pathname.toLowerCase().endsWith(".m3u8");
-    const isMp4 = parsedUrl.pathname.toLowerCase().endsWith(".mp4");
+    const isHls = parsedUrl.pathname
+      .toLowerCase()
+      .endsWith(".m3u8");
+
+    const isMp4 = parsedUrl.pathname
+      .toLowerCase()
+      .endsWith(".mp4");
 
     if (!isHls && !isMp4) {
       return res.status(400).json({
@@ -97,32 +167,54 @@ export const addExternalVideo = async (req, res) => {
       description,
       videoUrl,
       sourceType: "external",
-      format: isHls ? "hls" : "mp4"
+      format: isHls ? "hls" : "mp4",
+      owner: userId
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "External video added successfully",
       video
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error("Add external video error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message
     });
   }
 };
 
+
+// Get a single video belonging to the logged-in user
+// or a shared platform video.
 export const getVideoById = async (req, res) => {
   try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please log in to access this video."
+      });
+    }
+
     const { id } = req.params;
 
-    const video = await Video.findById(id);
+    const video = await Video.findOne({
+      _id: id,
+      $or: [
+        { owner: userId },
+        { owner: null, sourceType: "platform" }
+      ]
+    });
 
     if (!video) {
       return res.status(404).json({
         success: false,
-        message: "Video not found"
+        message: "Video not found or you do not have access."
       });
     }
 

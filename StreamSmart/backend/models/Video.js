@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const videoSchema = new mongoose.Schema(
@@ -38,11 +39,19 @@ const videoSchema = new mongoose.Schema(
     duration: {
       type: Number,
       default: 0
+    },
+
+    // User who owns or uploaded this video
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
     }
   },
   { timestamps: true }
 );
 
-const Video = mongoose.model("Video", videoSchema);
+const Video =
+  mongoose.models.Video || mongoose.model("Video", videoSchema);
 
 export default Video;

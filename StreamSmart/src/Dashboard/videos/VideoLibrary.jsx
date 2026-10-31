@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import {
   Search,
   Upload,
@@ -14,6 +14,35 @@ import "./VideoLibrary.css";
 
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+// Send the logged-in user's JWT token to the backend.
+const getAuthHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem("token")}`
+});
+
+// Format video duration as MM:SS or HH:MM:SS.
+const formatDuration = (seconds) => {
+  if (
+    seconds === null ||
+    seconds === undefined ||
+    !Number.isFinite(Number(seconds)) ||
+    Number(seconds) <= 0
+  ) {
+    return "Duration unknown";
+  }
+
+  const totalSeconds = Math.floor(Number(seconds));
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const remainingSeconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+  }
+
+  return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+};
 
 export default function VideoLibrary() {
   const [videos, setVideos] = useState([]);
@@ -30,13 +59,16 @@ export default function VideoLibrary() {
   const [videoUrl, setVideoUrl] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Fetch videos from backend
+  // Fetch videos belonging to the logged-in user.
   const fetchVideos = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${API_URL}/api/videos`);
+      const response = await fetch(`${API_URL}/api/videos`, {
+        headers: getAuthHeaders()
+      });
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -44,6 +76,7 @@ export default function VideoLibrary() {
       }
 
       setVideos(data.videos || []);
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -55,7 +88,7 @@ export default function VideoLibrary() {
     fetchVideos();
   }, []);
 
-  // Upload video
+  // Upload video.
   const handleUpload = async (event) => {
     event.preventDefault();
 
@@ -65,6 +98,7 @@ export default function VideoLibrary() {
     }
 
     const formData = new FormData();
+
     formData.append("title", title);
     formData.append("description", description);
     formData.append("video", videoFile);
@@ -75,6 +109,7 @@ export default function VideoLibrary() {
 
       const response = await fetch(`${API_URL}/api/videos/upload`, {
         method: "POST",
+        headers: getAuthHeaders(),
         body: formData
       });
 
@@ -90,6 +125,7 @@ export default function VideoLibrary() {
       setShowUpload(false);
 
       await fetchVideos();
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -97,7 +133,7 @@ export default function VideoLibrary() {
     }
   };
 
-  // Add external video
+  // Add external video URL.
   const handleExternalVideo = async (event) => {
     event.preventDefault();
 
@@ -108,6 +144,7 @@ export default function VideoLibrary() {
       const response = await fetch(`${API_URL}/api/videos/external`, {
         method: "POST",
         headers: {
+          ...getAuthHeaders(),
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -129,6 +166,7 @@ export default function VideoLibrary() {
       setShowExternal(false);
 
       await fetchVideos();
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -136,7 +174,7 @@ export default function VideoLibrary() {
     }
   };
 
-  // Search and filter videos
+  // Search and filter videos.
   const filteredVideos = videos.filter((video) =>
     (video.title || "").toLowerCase().includes(search.toLowerCase())
   );
@@ -147,7 +185,9 @@ export default function VideoLibrary() {
       <div className="library-header">
         <div>
           <span className="library-label">STREAMSMART / MEDIA</span>
+
           <h2>Video Library</h2>
+
           <p>
             Choose a video to explore its streaming performance.
           </p>
@@ -206,11 +246,16 @@ export default function VideoLibrary() {
           <input
             type="file"
             accept="video/mp4,video/webm,video/ogg"
-            onChange={(e) => setVideoFile(e.target.files[0] || null)}
+            onChange={(e) =>
+              setVideoFile(e.target.files[0] || null)
+            }
             required
           />
 
-          <button className="library-btn primary-btn" disabled={saving}>
+          <button
+            className="library-btn primary-btn"
+            disabled={saving}
+          >
             {saving ? "Uploading..." : "Upload Video"}
           </button>
         </form>
@@ -218,7 +263,10 @@ export default function VideoLibrary() {
 
       {/* External URL form */}
       {showExternal && (
-        <form className="library-form" onSubmit={handleExternalVideo}>
+        <form
+          className="library-form"
+          onSubmit={handleExternalVideo}
+        >
           <h3>Add an external video</h3>
 
           <input
@@ -243,7 +291,10 @@ export default function VideoLibrary() {
             required
           />
 
-          <button className="library-btn primary-btn" disabled={saving}>
+          <button
+            className="library-btn primary-btn"
+            disabled={saving}
+          >
             {saving ? "Adding..." : "Add Video"}
           </button>
         </form>
@@ -251,8 +302,10 @@ export default function VideoLibrary() {
 
       {/* Library summary */}
       <div className="library-summary">
+
         <div>
           <Film size={20} />
+
           <div>
             <strong>{videos.length}</strong>
             <span>Available videos</span>
@@ -261,28 +314,38 @@ export default function VideoLibrary() {
 
         <div>
           <Play size={20} />
+
           <div>
             <strong>
-              {videos.filter(v => v.sourceType === "platform").length}
+              {videos.filter(
+                (v) => v.sourceType === "platform"
+              ).length}
             </strong>
+
             <span>Platform videos</span>
           </div>
         </div>
 
         <div>
           <Upload size={20} />
+
           <div>
             <strong>
-              {videos.filter(v => v.sourceType === "upload").length}
+              {videos.filter(
+                (v) => v.sourceType === "upload"
+              ).length}
             </strong>
+
             <span>Your uploads</span>
           </div>
         </div>
+
       </div>
 
       {/* Search */}
       <div className="library-search">
         <Search size={19} />
+
         <input
           type="text"
           placeholder="Search videos..."
@@ -293,12 +356,15 @@ export default function VideoLibrary() {
 
       {/* Video grid */}
       <div className="video-grid">
+
         {loading ? (
           <p>Loading videos...</p>
         ) : filteredVideos.length === 0 ? (
           <div className="empty-library">
             <Film size={38} />
+
             <h3>No videos found</h3>
+
             <p>
               Upload a video or add an external video URL to get started.
             </p>
@@ -306,9 +372,13 @@ export default function VideoLibrary() {
         ) : (
           filteredVideos.map((video) => (
             <div className="video-card" key={video._id}>
+
               <div className="video-thumbnail">
                 {video.thumbnail ? (
-                  <img src={video.thumbnail} alt={video.title} />
+                  <img
+                    src={video.thumbnail}
+                    alt={video.title}
+                  />
                 ) : (
                   <Film size={40} />
                 )}
@@ -319,14 +389,13 @@ export default function VideoLibrary() {
               </div>
 
               <div className="video-card-content">
+
                 <div className="video-card-meta">
                   <span>{video.sourceType}</span>
 
                   <span>
                     <Clock3 size={13} />
-                    {video.duration
-                      ? `${Math.floor(video.duration / 60)} min`
-                      : "Duration unknown"}
+                    {formatDuration(video.duration)}
                   </span>
                 </div>
 
@@ -344,10 +413,12 @@ export default function VideoLibrary() {
                   <Play size={16} />
                   Open Player
                 </Link>
+
               </div>
             </div>
           ))
         )}
+
       </div>
     </div>
   );

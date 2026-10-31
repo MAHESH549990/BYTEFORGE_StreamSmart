@@ -1,4 +1,3 @@
-
 import {
   forwardRef,
   useEffect,
@@ -6,6 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { SimulatedNetworkLoader } from "../utils/SimulatedNetworkLoader";
 
 import { useLocation, useSearchParams } from "react-router-dom";
 import Hls from "hls.js";
@@ -18,6 +18,8 @@ import {
   Maximize,
   Settings2,
   LoaderCircle,
+  RotateCcw,
+  RotateCw,
 } from "lucide-react";
 
 import { Telemetry } from "./Telemetry";
@@ -28,6 +30,22 @@ const API_URL =
 
 const DEMO_VIDEO =
   "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+
+// Format playback time as MM:SS or HH:MM:SS.
+const formatPlaybackTime = (time) => {
+  if (!Number.isFinite(time) || time < 0) return "00:00";
+
+  const totalSeconds = Math.floor(time);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  }
+
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+};
 
 const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
   const videoRef = useRef(null);
@@ -64,6 +82,10 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Playback position and duration for the timeline controls.
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   const [quality, setQuality] = useState(-1);
   const [levels, setLevels] = useState([]);
@@ -155,6 +177,8 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     setMetrics(telemetry.getSummary());
 
     setPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
     setQuality(-1);
     setLevels([]);
     setHlsReady(false);
@@ -351,6 +375,20 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       }
     };
 
+    // Keep the playback timeline synchronized with the media element.
+    const handleLoadedMetadata = () => {
+      setCurrentTime(video.currentTime || 0);
+      setDuration(
+        Number.isFinite(video.duration) ? video.duration : 0
+      );
+    };
+
+    const handleDurationChange = () => {
+      setDuration(
+        Number.isFinite(video.duration) ? video.duration : 0
+      );
+    };
+
     // Video event handlers
     const handlePlay = () => {
       if (!hasStarted) {
@@ -390,6 +428,7 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
     // Check experiment duration during playback
     const handleTimeUpdate = () => {
+      setCurrentTime(video.currentTime || 0);
       updateMetrics();
 
       if (!experimentRunningRef.current) return;
@@ -474,6 +513,8 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     video.addEventListener("canplay", handleCanPlay);
     video.addEventListener("loadeddata", handleCanPlay);
     video.addEventListener("waiting", handleWaiting);
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    video.addEventListener("durationchange", handleDurationChange);
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
     video.addEventListener("error", handleError);
@@ -481,9 +522,12 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     if (isHls) {
       if (Hls.isSupported()) {
         hls = new Hls({
-          enableWorker: true,
-          capLevelToPlayerSize: true,
-        });
+            enableWorker: true,
+            capLevelToPlayerSize: true,
+
+            // Apply simulated bandwidth, latency and packet loss.
+            loader: SimulatedNetworkLoader,
+          });
 
         hlsRef.current = hls;
 
@@ -675,6 +719,8 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       video.removeEventListener("canplay", handleCanPlay);
       video.removeEventListener("loadeddata", handleCanPlay);
       video.removeEventListener("waiting", handleWaiting);
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      video.removeEventListener("durationchange", handleDurationChange);
       video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("ended", handleEnded);
       video.removeEventListener("error", handleError);
@@ -905,6 +951,45 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     },
   }));
 
+  // Seek forward or backward without changing experiment playback.
+  const seekVideo = (offsetSeconds) => {
+    const video = videoRef.current;
+
+    if (
+      !video ||
+      experimentRunningRef.current ||
+      !Number.isFinite(video.duration)
+    ) {
+      return;
+    }
+
+    const nextTime = Math.max(
+      0,
+      Math.min(video.duration, video.currentTime + offsetSeconds)
+    );
+
+    video.currentTime = nextTime;
+    setCurrentTime(nextTime);
+  };
+
+  // Seek to a selected position on the timeline.
+  const handleTimelineChange = (event) => {
+    const video = videoRef.current;
+    const nextTime = Number(event.target.value);
+
+    if (
+      !video ||
+      experimentRunningRef.current ||
+      !Number.isFinite(video.duration) ||
+      !Number.isFinite(nextTime)
+    ) {
+      return;
+    }
+
+    video.currentTime = Math.max(0, Math.min(video.duration, nextTime));
+    setCurrentTime(video.currentTime);
+  };
+
   // Normal player controls
   const togglePlay = async () => {
     const video = videoRef.current;
@@ -1071,6 +1156,34 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           )}
         </div>
 
+        {/* Playback timeline */}
+        <div className="player-timeline">
+          <div className="timeline-time-labels">
+            <span>{formatPlaybackTime(currentTime)}</span>
+            <span>
+              {duration > 0
+                ? formatPlaybackTime(duration)
+                : "--:--"}
+            </span>
+          </div>
+
+          <input
+            className="timeline-slider"
+            type="range"
+            min="0"
+            max={duration > 0 ? duration : 0}
+            step="0.1"
+            value={
+              duration > 0
+                ? Math.min(currentTime, duration)
+                : 0
+            }
+            onChange={handleTimelineChange}
+            disabled={duration <= 0 || experimentRunning}
+            aria-label="Video playback position"
+          />
+        </div>
+
         <div className="player-controls">
           <button
             className="control-button"
@@ -1080,7 +1193,29 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
             {playing ? <Pause size={20} /> : <Play size={20} />}
           </button>
 
+          <button
+            className="control-button seek-control"
+            onClick={() => seekVideo(-10)}
+            disabled={duration <= 0 || experimentRunning}
+            title="Backward 10 seconds"
+            aria-label="Backward 10 seconds"
+          >
+            <RotateCcw size={18} />
+            <span>10s</span>
+          </button>
+
           <Volume2 size={19} />
+
+          <button
+            className="control-button seek-control"
+            onClick={() => seekVideo(10)}
+            disabled={duration <= 0 || experimentRunning}
+            title="Forward 10 seconds"
+            aria-label="Forward 10 seconds"
+          >
+            <RotateCw size={18} />
+            <span>10s</span>
+          </button>
 
           <div className="quality-control">
             <Settings2 size={17} />
@@ -1176,9 +1311,9 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           <div className="metric-card">
             <span>Estimated Throughput</span>
             <strong>
-              {metrics.estimatedThroughput
-                ? `${metrics.estimatedThroughput.toFixed(2)} Kbps`
-                : "--"}
+               {metrics.estimatedThroughput
+                  ? `${(metrics.estimatedThroughput / 1000).toFixed(2)} Mbps`
+                  : "--"}
             </strong>
           </div>
 

@@ -1,18 +1,22 @@
+
 import express from "express";
+
 import {
   getVideos,
-  getVideoById, // Add this
+  getVideoById,
   uploadVideo,
   addExternalVideo
 } from "../controllers/videoController.js";
 
+import { requireAuth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getVideos);
+// Only authenticated users can access videos.
+router.get("/", requireAuth, getVideos);
 
-router.post("/external", addExternalVideo);
+router.post("/external", requireAuth, addExternalVideo);
 
-router.get("/:id", getVideoById);
+router.get("/:id", requireAuth, getVideoById);
 
 export default router;
