@@ -41,6 +41,7 @@ export default function Footer() {
             <Link to="/security">Security</Link>
             <Link to="/contact">Contact Us</Link>
             <Link to="/session">Session History</Link>
+            <Link to="/security">Privacy & Security</Link>
           </div>
 
           {/* Technology */}
