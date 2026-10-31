@@ -42,18 +42,23 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
   const runCustomABRRef = useRef(null);
 
   // Experiment references
+  const experimentConfigRef = useRef(null);
+  const experimentFinishingRef = useRef(false);
   const experimentModeRef = useRef("normal");
   const experimentRunningRef = useRef(false);
   const experimentResolveRef = useRef(null);
   const experimentRejectRef = useRef(null);
+  const experimentTimerRef = useRef(null);
+  const experimentStartTimeRef = useRef(null);
 
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const videoId = searchParams.get("videoId");
 
+  // Accept video from ExperimentRunner or normal player navigation
   const [selectedVideo, setSelectedVideo] = useState(
-    location.state?.video || null
+    props.video || location.state?.video || null
   );
 
   const [playing, setPlaying] = useState(false);
@@ -83,17 +88,24 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
   // Fetch selected video from MongoDB
   useEffect(() => {
+    // Priority 1: Video passed from ExperimentRunner
+    const passedVideo = props.video || location.state?.video;
+
+    if (passedVideo) {
+      setSelectedVideo(passedVideo);
+      setLoading(true);
+      setError("");
+      return;
+    }
+
+    // Priority 2: Fetch video using query parameter
     if (!videoId) {
       setSelectedVideo(null);
+      setLoading(false);
       return;
     }
 
-    const passedVideo = location.state?.video;
-
-    if (passedVideo?._id === videoId) {
-      setSelectedVideo(passedVideo);
-      return;
-    }
+    let cancelled = false;
 
     const fetchSelectedVideo = async () => {
       try {
@@ -111,15 +123,23 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           throw new Error(data.message || "Video not found");
         }
 
-        setSelectedVideo(data.video);
+        if (!cancelled) {
+          setSelectedVideo(data.video);
+        }
       } catch (err) {
-        setError(err.message);
-        setLoading(false);
+        if (!cancelled) {
+          setError(err.message);
+          setLoading(false);
+        }
       }
     };
 
     fetchSelectedVideo();
-  }, [videoId, location.state]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [videoId, location.state, props.video]);
 
   // Set up video and HLS streaming engine
   useEffect(() => {
@@ -154,7 +174,16 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     let hls = null;
     let hasStarted = false;
 
-    const videoUrl = selectedVideo?.videoUrl || DEMO_VIDEO;
+    // Use selected video's URL. Demo is only for normal player mode.
+    const videoUrl = selectedVideo
+      ? selectedVideo.videoUrl
+      : DEMO_VIDEO;
+
+    if (!videoUrl) {
+      setLoading(false);
+      setError("Selected video URL is missing.");
+      return;
+    }
 
     const sourceUrl = videoUrl.startsWith("/")
       ? `${API_URL}${videoUrl}`
@@ -164,6 +193,9 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       selectedVideo?.format === "hls" ||
       sourceUrl.toLowerCase().split("?")[0].endsWith(".m3u8");
 
+    console.log("Loading video:", selectedVideo?.title || "Demo Video");
+    console.log("Video source:", sourceUrl);
+
     const updateMetrics = () => {
       telemetry.updateBuffer(video);
       setMetrics(telemetry.getSummary());
@@ -172,20 +204,29 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     const getBufferSeconds = () => {
       if (!video.buffered.length) return 0;
 
-      const end = video.buffered.end(
-        video.buffered.length - 1
-      );
+      for (let i = 0; i < video.buffered.length; i++) {
+        const start = video.buffered.start(i);
+        const end = video.buffered.end(i);
 
-      return Math.max(0, end - video.currentTime);
+        if (
+          video.currentTime >= start &&
+          video.currentTime <= end
+        ) {
+          return Math.max(0, end - video.currentTime);
+        }
+      }
+
+      return 0;
     };
 
     // Custom Adaptive Bitrate algorithm
     const runCustomABR = (bandwidthKbps) => {
+      // Do not override manually selected quality.
       if (manualQualityRef.current !== null) return;
 
       if (!hls || !hls.levels.length) return;
 
-      // Custom ABR should only run in optimized mode
+      // Baseline experiment uses fixed quality.
       if (experimentModeRef.current === "baseline") return;
 
       const result = selectQuality({
@@ -196,9 +237,16 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
         upgradeStreak: upgradeStreakRef.current,
       });
 
-      upgradeStreakRef.current = result.upgradeStreak;
+      if (!result || !Number.isInteger(result.selectedLevel)) {
+        return;
+      }
 
-      const selectedLevel = result.selectedLevel;
+      const selectedLevel = Math.max(
+        0,
+        Math.min(result.selectedLevel, hls.levels.length - 1)
+      );
+
+      upgradeStreakRef.current = result.upgradeStreak;
 
       if (selectedLevel !== previousLevelRef.current) {
         console.log("Custom ABR decision:", {
@@ -206,20 +254,110 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           bufferSeconds: getBufferSeconds(),
           previousLevel: previousLevelRef.current,
           selectedLevel,
-          resolution: hls.levels[selectedLevel]?.height,
+          resolution: hls.levels[selectedLevel]?.height
+            ? `${hls.levels[selectedLevel].height}p`
+            : "--",
         });
 
+        // Switch the next playback segment without flushing
+        // the entire existing video buffer.
+        hls.nextLevel = selectedLevel;
+
         previousLevelRef.current = selectedLevel;
-        hls.loadLevel = selectedLevel;
       }
     };
 
     runCustomABRRef.current = runCustomABR;
 
+    // Finish and save the current experiment
+    const finishExperiment = async () => {
+      if (
+        !experimentRunningRef.current ||
+        experimentFinishingRef.current
+      ) {
+        return;
+      }
+
+      experimentFinishingRef.current = true;
+
+      clearInterval(experimentTimerRef.current);
+      experimentTimerRef.current = null;
+
+      video.pause();
+
+      setPlaying(false);
+      setLoading(false);
+
+      const config = experimentConfigRef.current;
+
+      try {
+        if (!config || !config.videoId) {
+          throw new Error("Experiment configuration is missing");
+        }
+
+        const result = telemetry.finish();
+
+        setMetrics(result);
+
+        const response = await fetch(
+          `${API_URL}/api/experiments`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              video: config.videoId,
+              mode: config.mode,
+              networkProfile: config.networkProfile,
+              fixedQuality:
+                config.mode === "baseline"
+                  ? Number(config.fixedQuality)
+                  : null,
+              durationSeconds: Number(config.durationSeconds),
+              metrics: result,
+              status: "completed",
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Unable to save experiment"
+          );
+        }
+
+        console.log(
+          `${config.mode} experiment saved:`,
+          data.experiment
+        );
+
+        experimentResolveRef.current?.(result);
+      } catch (err) {
+        console.error("Experiment saving failed:", err);
+        experimentRejectRef.current?.(err);
+      } finally {
+        experimentRunningRef.current = false;
+        experimentFinishingRef.current = false;
+
+        setExperimentRunning(false);
+
+        experimentResolveRef.current = null;
+        experimentRejectRef.current = null;
+        experimentConfigRef.current = null;
+        experimentStartTimeRef.current = null;
+      }
+    };
+
     // Video event handlers
     const handlePlay = () => {
       if (!hasStarted) {
-        telemetry.start();
+        if (!experimentRunningRef.current) {
+          telemetry.start();
+        }
+
         hasStarted = true;
       }
 
@@ -244,34 +382,69 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     };
 
     const handleWaiting = () => {
-      if (telemetry.firstFrameAt !== null) {
-        telemetry.startBuffering();
-      } else {
-        telemetry.record("startup_waiting");
-      }
+      telemetry.startBuffering();
 
       setLoading(true);
       updateMetrics();
     };
 
-    const handleEnded = () => {
-      setPlaying(false);
-      setLoading(false);
+    // Check experiment duration during playback
+    const handleTimeUpdate = () => {
+      updateMetrics();
 
-      if (experimentRunningRef.current) {
-        const result = telemetry.finish();
+      if (!experimentRunningRef.current) return;
 
-        setMetrics(result);
+      const duration =
+        Number(experimentConfigRef.current?.durationSeconds);
+
+      const startTime = experimentStartTimeRef.current;
+
+      if (!duration || !startTime) return;
+
+      const elapsedSeconds =
+        (Date.now() - startTime) / 1000;
+
+      if (elapsedSeconds >= duration) {
+        finishExperiment();
+      }
+    };
+
+    // Restart video if it ends before test duration
+    const handleEnded = async () => {
+      if (!experimentRunningRef.current) {
+        setPlaying(false);
+        setLoading(false);
+        updateMetrics();
+        return;
+      }
+
+      const duration =
+        Number(experimentConfigRef.current?.durationSeconds);
+
+      const startTime = experimentStartTimeRef.current;
+
+      const elapsedSeconds = startTime
+        ? (Date.now() - startTime) / 1000
+        : duration;
+
+      if (elapsedSeconds >= duration) {
+        await finishExperiment();
+        return;
+      }
+
+      try {
+        video.currentTime = 0;
+        await video.play();
+      } catch (err) {
+        experimentRejectRef.current?.(
+          new Error("Unable to restart video during experiment")
+        );
+
+        clearInterval(experimentTimerRef.current);
+        experimentTimerRef.current = null;
 
         experimentRunningRef.current = false;
         setExperimentRunning(false);
-
-        experimentResolveRef.current?.(result);
-
-        experimentResolveRef.current = null;
-        experimentRejectRef.current = null;
-      } else {
-        updateMetrics();
       }
     };
 
@@ -280,6 +453,9 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       setError("Unable to play this video. Check its URL or format.");
 
       if (experimentRunningRef.current) {
+        clearInterval(experimentTimerRef.current);
+        experimentTimerRef.current = null;
+
         experimentRunningRef.current = false;
         setExperimentRunning(false);
 
@@ -298,7 +474,7 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     video.addEventListener("canplay", handleCanPlay);
     video.addEventListener("loadeddata", handleCanPlay);
     video.addEventListener("waiting", handleWaiting);
-    video.addEventListener("timeupdate", updateMetrics);
+    video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
     video.addEventListener("error", handleError);
 
@@ -311,11 +487,26 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
         hlsRef.current = hls;
 
-        // Manifest loaded
         hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
           console.log("Available HLS quality levels:", data.levels);
 
-          setLevels(data.levels);
+          console.table(
+            data.levels.map((level, index) => ({
+              index,
+              height: level.height,
+              width: level.width,
+              bitrate: `${(level.bitrate / 1000).toFixed(0)} Kbps`,
+            }))
+          );
+
+          const availableLevels = data.levels.map(
+            (level, index) => ({
+              ...level,
+              originalIndex: index,
+            })
+          );
+
+          setLevels(availableLevels);
           setHlsReady(data.levels.length > 0);
           setIsHlsActive(true);
           setLoading(false);
@@ -324,8 +515,19 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           previousLevelRef.current = 0;
           upgradeStreakRef.current = 0;
 
-          hls.loadLevel = 0;
+          // Start in Auto mode instead of locking the player
+          // to the lowest level.
+          hls.startLevel = -1;
+          hls.loadLevel = -1;
+
+          manualQualityRef.current = null;
           setQuality(-1);
+
+          console.log("HLS Auto mode enabled:", {
+            autoLevelEnabled: hls.autoLevelEnabled,
+            startLevel: hls.startLevel,
+            availableLevels: hls.levels.length,
+          });
         });
 
         // Quality changed
@@ -339,6 +541,9 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           const resolution = level.height
             ? `${level.height}p`
             : "--";
+
+          // Keep track of the currently active level.
+          previousLevelRef.current = data.level;
 
           telemetry.updateStreamMetrics({
             bitrate: level.bitrate,
@@ -358,7 +563,26 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           updateMetrics();
         });
 
-        // Fragment loaded and throughput measured
+        // Record the resolution of the actual loaded playback fragment.
+        hls.on(Hls.Events.FRAG_CHANGED, (_, data) => {
+          const fragmentLevel = data.frag?.level;
+          const level = hls.levels[fragmentLevel];
+
+          if (!level) return;
+
+          const resolution = level.height
+            ? `${level.height}p`
+            : "--";
+
+          telemetry.updateStreamMetrics({
+            bitrate: level.bitrate,
+            resolution,
+          });
+
+          updateMetrics();
+        });
+
+        // Measure fragment throughput
         hls.on(Hls.Events.FRAG_LOADED, (_, data) => {
           const stats = data.frag.stats;
 
@@ -377,6 +601,8 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
               throughput: throughputKbps,
             });
 
+            // Custom ABR makes a new decision using
+            // the latest measured throughput.
             runCustomABR(throughputKbps);
 
             updateMetrics();
@@ -395,6 +621,9 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
             );
 
             if (experimentRunningRef.current) {
+              clearInterval(experimentTimerRef.current);
+              experimentTimerRef.current = null;
+
               experimentRunningRef.current = false;
               setExperimentRunning(false);
 
@@ -410,18 +639,15 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
         hls.loadSource(sourceUrl);
         hls.attachMedia(video);
-
       } else if (
         video.canPlayType("application/vnd.apple.mpegurl")
       ) {
         video.src = sourceUrl;
         video.load();
-
       } else {
         setLoading(false);
         setError("HLS is not supported in this browser.");
       }
-
     } else {
       video.src = sourceUrl;
       video.load();
@@ -430,7 +656,9 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
     return () => {
       runCustomABRRef.current = null;
 
-      // Reject a pending experiment if the player is unmounted
+      clearInterval(experimentTimerRef.current);
+      experimentTimerRef.current = null;
+
       if (experimentRunningRef.current) {
         experimentRejectRef.current?.(
           new Error("Player was closed during the experiment")
@@ -447,7 +675,7 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       video.removeEventListener("canplay", handleCanPlay);
       video.removeEventListener("loadeddata", handleCanPlay);
       video.removeEventListener("waiting", handleWaiting);
-      video.removeEventListener("timeupdate", updateMetrics);
+      video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("ended", handleEnded);
       video.removeEventListener("error", handleError);
 
@@ -465,16 +693,27 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
   // Methods exposed to ExperimentRunner
   useImperativeHandle(ref, () => ({
-    // Run baseline or optimized playback until video ends
+    isReady() {
+      const video = videoRef.current;
+      const hls = hlsRef.current;
+
+      return Boolean(
+        video &&
+        hls &&
+        hls.levels.length >= 2 &&
+        video.readyState >= HTMLMediaElement.HAVE_METADATA
+      );
+    },
+
     async runPlayback(config) {
       const video = videoRef.current;
       const hls = hlsRef.current;
 
-      if (!video) {
+      if (!video || !hls) {
         throw new Error("Video player is not ready");
       }
 
-      if (!hls || !hls.levels || hls.levels.length < 2) {
+      if (hls.levels.length < 2) {
         throw new Error(
           "Experiment requires an HLS video with at least two quality levels"
         );
@@ -490,8 +729,21 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
       const mode = config.mode;
 
-      if (mode !== "baseline" && mode !== "optimized") {
+      if (!["baseline", "optimized"].includes(mode)) {
         throw new Error("Invalid experiment mode");
+      }
+
+      const durationSeconds = Number(config.durationSeconds);
+
+      if (
+        !Number.isFinite(durationSeconds) ||
+        durationSeconds <= 0
+      ) {
+        throw new Error("Invalid experiment duration");
+      }
+
+      if (!config.videoId) {
+        throw new Error("Video ID is missing");
       }
 
       if (mode === "baseline") {
@@ -505,22 +757,23 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
           throw new Error("Invalid fixed quality level");
         }
 
-        // Disable custom ABR and use fixed quality
         manualQualityRef.current = fixedLevel;
         previousLevelRef.current = fixedLevel;
 
-        hls.loadLevel = fixedLevel;
+        hls.currentLevel = fixedLevel;
 
         setQuality(fixedLevel);
-
       } else {
-        // Enable custom ABR
+        // Optimized experiment uses Custom ABR.
         manualQualityRef.current = null;
 
         previousLevelRef.current = 0;
         upgradeStreakRef.current = 0;
 
-        hls.loadLevel = 0;
+        // Start at the lowest level, but keep adaptive
+        // selection enabled for subsequent segments.
+        hls.startLevel = 0;
+        hls.nextLevel = -1;
 
         setQuality(-1);
       }
@@ -528,12 +781,27 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       experimentModeRef.current = mode;
       setExperimentMode(mode);
 
-      // Reset playback position and telemetry
+      experimentConfigRef.current = {
+        videoId: config.videoId,
+        mode,
+        networkProfile: config.networkProfile,
+        fixedQuality: config.fixedQuality,
+        durationSeconds,
+      };
+
+      experimentFinishingRef.current = false;
+
       video.pause();
-      video.currentTime = 0;
+
+      try {
+        video.currentTime = 0;
+      } catch (err) {
+        console.error("Unable to reset video position:", err);
+      }
+
+      telemetryRef.current.reset();
 
       const telemetry = telemetryRef.current;
-      telemetry.start();
 
       setMetrics(telemetry.getSummary());
 
@@ -543,23 +811,52 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       experimentRunningRef.current = true;
       setExperimentRunning(true);
 
+      experimentStartTimeRef.current = Date.now();
+
       return new Promise((resolve, reject) => {
         experimentResolveRef.current = resolve;
         experimentRejectRef.current = reject;
 
+        experimentTimerRef.current = setInterval(() => {
+          const startTime = experimentStartTimeRef.current;
+
+          if (!startTime) return;
+
+          const elapsedSeconds =
+            (Date.now() - startTime) / 1000;
+
+          if (elapsedSeconds >= durationSeconds) {
+            const videoElement = videoRef.current;
+
+            if (videoElement) {
+              videoElement.pause();
+              videoElement.dispatchEvent(
+                new Event("timeupdate")
+              );
+            }
+          }
+        }, 500);
+
         video.play().catch((err) => {
+          clearInterval(experimentTimerRef.current);
+          experimentTimerRef.current = null;
+
           experimentRunningRef.current = false;
+          experimentFinishingRef.current = false;
+
           setExperimentRunning(false);
 
           experimentResolveRef.current = null;
           experimentRejectRef.current = null;
+
+          experimentConfigRef.current = null;
+          experimentStartTimeRef.current = null;
 
           reject(err);
         });
       });
     },
 
-    // Reset player between baseline and optimized tests
     async resetTest() {
       const video = videoRef.current;
       const hls = hlsRef.current;
@@ -597,7 +894,9 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       setError("");
 
       if (hls) {
-        hls.loadLevel = 0;
+        // Return to Auto mode after resetting.
+        hls.startLevel = -1;
+        hls.nextLevel = -1;
       }
     },
 
@@ -630,13 +929,35 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
 
     if (!hls || experimentRunningRef.current) return;
 
+    // Auto / Custom ABR mode
     if (level === -1) {
+      // Release the manual quality lock.
       manualQualityRef.current = null;
 
       setQuality(-1);
-
       upgradeStreakRef.current = 0;
 
+      // Keep track of the currently playing level
+      // before enabling adaptive selection.
+      const activeLevel =
+        hls.currentLevel >= 0
+          ? hls.currentLevel
+          : hls.loadLevel;
+
+      if (activeLevel >= 0) {
+        previousLevelRef.current = activeLevel;
+      }
+
+      // -1 tells HLS.js to release its manual level lock.
+      hls.nextLevel = -1;
+
+      console.log("Custom ABR mode enabled:", {
+        autoLevelEnabled: hls.autoLevelEnabled,
+        activeLevel,
+        bandwidthKbps: bandwidthRef.current,
+      });
+
+      // Re-evaluate immediately if throughput is already available.
       if (bandwidthRef.current > 0) {
         runCustomABRRef.current?.(bandwidthRef.current);
       }
@@ -644,12 +965,48 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
       return;
     }
 
+    // Manual quality mode
+    if (
+      !Number.isInteger(level) ||
+      level < 0 ||
+      level >= hls.levels.length
+    ) {
+      return;
+    }
+
     manualQualityRef.current = level;
     previousLevelRef.current = level;
+    upgradeStreakRef.current = 0;
 
-    hls.loadLevel = level;
+    // Immediately switch to the selected manual quality.
+    hls.currentLevel = level;
 
     setQuality(level);
+
+    console.log("Manual quality selected:", {
+      level,
+      resolution: hls.levels[level]?.height
+        ? `${hls.levels[level].height}p`
+        : "Unknown",
+      bitrate: hls.levels[level]?.bitrate,
+    });
+  };
+
+  // Display unique labels when resolutions are duplicated
+  const getQualityLabel = (level) => {
+    const sameHeightCount = levels.filter(
+      (item) => item.height === level.height
+    ).length;
+
+    const resolution = level.height
+      ? `${level.height}p`
+      : `Level ${level.originalIndex + 1}`;
+
+    if (sameHeightCount > 1) {
+      return `${resolution} (${Math.round(level.bitrate / 1000)} Kbps)`;
+    }
+
+    return resolution;
   };
 
   const toggleFullscreen = () => {
@@ -737,13 +1094,14 @@ const VideoPlayer = forwardRef(function VideoPlayer(props, ref) {
                 experimentRunning
               }
             >
-              <option value={-1}>Custom ABR</option>
+              <option value={-1}>Auto (Custom ABR)</option>
 
-              {levels.map((level, index) => (
-                <option key={index} value={index}>
-                  {level.height
-                    ? `${level.height}p`
-                    : `Level ${index + 1}`}
+              {levels.map((level) => (
+                <option
+                  key={level.originalIndex}
+                  value={level.originalIndex}
+                >
+                  {getQualityLabel(level)}
                 </option>
               ))}
             </select>

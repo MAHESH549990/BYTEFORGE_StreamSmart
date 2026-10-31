@@ -8,7 +8,8 @@ import NetworkLab from "./Dashboard/network/NetworkLab.jsx";
 import Analytics from "./Dashboard/analytics/Analytics.jsx";
 import ComparisonChart from "./Dashboard/analytics/ComparisonChart.jsx";
 import TestHistory from "./Dashboard/history/TestHistory.jsx";
-import ExperimentPage from "./experiments/ExperimentPage";
+import ExperimentPage from "./experiments/ExperimentPage.jsx";
+import ExperimentRunner from "./experiments/ExperimentRunner.jsx";
 
 import Navbar from "./Components/navbar";
 import Footer from "./Components/footer";
@@ -41,13 +42,11 @@ function App() {
 
           {/* User Dashboard */}
           <Route path="/dashboard" element={<UserDashboard />}>
-          <Route
-                path="/dashboard/experiment"
-                element={<ExperimentPage />}
-              />
             <Route index element={<DashboardHome />} />
 
             <Route path="videos" element={<VideoLibrary />} />
+
+            <Route path="player" element={<VideoPlayer />} />
 
             <Route path="video-quality" element={<VideoPlayer />} />
 
@@ -55,18 +54,45 @@ function App() {
 
             <Route path="analytics" element={<Analytics />} />
 
-            <Route path="comparison" element={<ComparisonChart />} />
+            <Route
+              path="cache-analytics"
+              element={<Analytics />}
+            />
+
+            <Route
+              path="comparison"
+              element={<ComparisonChart />}
+            />
 
             <Route path="history" element={<TestHistory />} />
+
+            {/* Experiment configuration */}
+            <Route
+              path="experiment"
+              element={<ExperimentPage />}
+            />
+
+            {/* Experiment execution */}
+            <Route
+              path="experiment/run"
+              element={<ExperimentRunner />}
+            />
+
+            <Route
+              path="settings"
+              element={
+                <div className="p-4">
+                  <h2>Settings</h2>
+                  <p>Settings page is coming soon.</p>
+                </div>
+              }
+            />
           </Route>
 
           {/* Admin Dashboard */}
           <Route path="/admin" element={<Dashboard />} />
 
-          {/* Standalone Video Player */}
-          <Route path="/player" element={<VideoPlayer />} />
-
-          {/* 404 Page */}
+          {/* 404 */}
           <Route
             path="*"
             element={

@@ -1,88 +1,189 @@
 
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Video,
   Network,
-  ChartNoAxesCombined,
+  SlidersHorizontal,
+  Database,
   GitCompareArrows,
   History,
-  UserRound,
+  Settings,
+  FlaskConical,
+  Radio,
+  Menu,
+  X,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 const menuItems = [
   {
-    name: "Overview",
+    name: "Dashboard",
     path: "/dashboard",
     icon: LayoutDashboard,
+    end: true,
   },
   {
-    name: "Video Library",
-    path: "/dashboard/videos",
+    name: "Video Player",
+    path: "/dashboard/player",
     icon: Video,
   },
   {
-    name: "Network Lab",
+    name: "Network Simulator",
     path: "/dashboard/network-lab",
     icon: Network,
   },
   {
-    name: "Analytics",
-    path: "/dashboard/analytics",
-    icon: ChartNoAxesCombined,
+    name: "Adaptive Quality",
+    path: "/dashboard/video-quality",
+    icon: SlidersHorizontal,
   },
   {
-    name: "Comparison",
+    name: "Cache Analytics",
+    path: "/dashboard/cache-analytics",
+    icon: Database,
+  },
+  {
+    name: "Performance Comparison",
     path: "/dashboard/comparison",
     icon: GitCompareArrows,
   },
   {
-    name: "Test History",
+    name: "Session History",
     path: "/dashboard/history",
     icon: History,
+  },
+  {
+    name: "Settings",
+    path: "/dashboard/settings",
+    icon: Settings,
   },
 ];
 
 export default function DashboardSidebar() {
+  const [isOpen, setIsOpen] = useState(true);
+
+  const closeMobileSidebar = () => {
+    if (window.innerWidth <= 768) {
+      setIsOpen(false);
+    }
+  };
+
   return (
-    <aside className="dashboard-sidebar">
-      <div className="sidebar-brand">
-        <Video size={25} />
-        <span>StreamSmart</span>
-      </div>
+    <>
+      {/* Mobile backdrop */}
+      {isOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-      <p className="sidebar-heading">WORKSPACE</p>
+      <div
+        className={`dashboard-sidebar-shell ${
+          isOpen ? "sidebar-expanded" : "sidebar-collapsed"
+        }`}
+      >
+        {/* Toggle button */}
+        <button
+          type="button"
+          className="sidebar-toggle"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Hide sidebar" : "Show sidebar"}
+          title={isOpen ? "Hide sidebar" : "Show sidebar"}
+        >
+          {isOpen ? (
+            <>
+              <PanelLeftClose className="desktop-toggle-icon" size={19} />
+              <X className="mobile-toggle-icon" size={21} />
+            </>
+          ) : (
+            <>
+              <PanelLeftOpen className="desktop-toggle-icon" size={19} />
+              <Menu className="mobile-toggle-icon" size={21} />
+            </>
+          )}
+        </button>
 
-      <nav className="sidebar-menu">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
+        <aside className="dashboard-sidebar">
+          <LinkBrand />
 
-          return (
+          <div className="sidebar-section">
+            <p className="sidebar-heading">MAIN MENU</p>
+
+            <nav className="sidebar-menu">
+              {menuItems.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={item.end || false}
+                    onClick={closeMobileSidebar}
+                    title={item.name}
+                    className={({ isActive }) =>
+                      isActive
+                        ? "sidebar-link active"
+                        : "sidebar-link"
+                    }
+                  >
+                    <Icon size={19} strokeWidth={1.9} />
+                    <span>{item.name}</span>
+                  </NavLink>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="sidebar-section experiment-section">
+            <p className="sidebar-heading">TESTING</p>
+
             <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === "/dashboard"}
+              to="/dashboard/experiment"
+              onClick={closeMobileSidebar}
+              title="Experiments"
               className={({ isActive }) =>
-                isActive ? "sidebar-link active" : "sidebar-link"
+                isActive
+                  ? "sidebar-link active"
+                  : "sidebar-link"
               }
             >
-              <Icon size={19} />
-              <span>{item.name}</span>
+              <FlaskConical size={19} strokeWidth={1.9} />
+              <span>Experiments</span>
             </NavLink>
-          );
-        })}
-      </nav>
+          </div>
 
-      <div className="sidebar-bottom">
-        <NavLink to="/profile" className="sidebar-link">
-          <UserRound size={19} />
-          <span>My Profile</span>
+          <div className="sidebar-status">
+            <div className="status-icon">
+              <Radio size={17} />
+            </div>
 
-          <NavLink to="/dashboard/experiment">
-               Experiments
-         </NavLink>
-        </NavLink>
+            <div>
+              <strong>StreamSmart</strong>
+              <span>Streaming Workspace</span>
+            </div>
+
+            <span className="status-dot"></span>
+          </div>
+        </aside>
       </div>
-    </aside>
+    </>
+  );
+}
+
+function LinkBrand() {
+  return (
+    <div className="sidebar-brand">
+      <div className="sidebar-brand-icon">
+        <Video size={22} />
+      </div>
+
+      <span>
+        Stream<span className="sidebar-brand-highlight">Smart</span>
+      </span>
+    </div>
   );
 }

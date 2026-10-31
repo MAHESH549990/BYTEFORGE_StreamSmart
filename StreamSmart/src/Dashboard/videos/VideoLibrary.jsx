@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -11,7 +12,8 @@ import {
 
 import "./VideoLibrary.css";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function VideoLibrary() {
   const [videos, setVideos] = useState([]);
@@ -134,8 +136,9 @@ export default function VideoLibrary() {
     }
   };
 
+  // Search and filter videos
   const filteredVideos = videos.filter((video) =>
-    video.title.toLowerCase().includes(search.toLowerCase())
+    (video.title || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -259,7 +262,9 @@ export default function VideoLibrary() {
         <div>
           <Play size={20} />
           <div>
-            <strong>{videos.filter(v => v.sourceType === "platform").length}</strong>
+            <strong>
+              {videos.filter(v => v.sourceType === "platform").length}
+            </strong>
             <span>Platform videos</span>
           </div>
         </div>
@@ -267,7 +272,9 @@ export default function VideoLibrary() {
         <div>
           <Upload size={20} />
           <div>
-            <strong>{videos.filter(v => v.sourceType === "upload").length}</strong>
+            <strong>
+              {videos.filter(v => v.sourceType === "upload").length}
+            </strong>
             <span>Your uploads</span>
           </div>
         </div>
@@ -292,7 +299,9 @@ export default function VideoLibrary() {
           <div className="empty-library">
             <Film size={38} />
             <h3>No videos found</h3>
-            <p>Upload a video or add an external video URL to get started.</p>
+            <p>
+              Upload a video or add an external video URL to get started.
+            </p>
           </div>
         ) : (
           filteredVideos.map((video) => (
@@ -312,6 +321,7 @@ export default function VideoLibrary() {
               <div className="video-card-content">
                 <div className="video-card-meta">
                   <span>{video.sourceType}</span>
+
                   <span>
                     <Clock3 size={13} />
                     {video.duration
@@ -321,10 +331,13 @@ export default function VideoLibrary() {
                 </div>
 
                 <h3>{video.title}</h3>
-                <p>{video.description || "No description available."}</p>
+
+                <p>
+                  {video.description || "No description available."}
+                </p>
 
                 <Link
-                  to={`/player?videoId=${video._id}`}
+                  to={`/dashboard/player?videoId=${video._id}`}
                   state={{ video }}
                   className="watch-video-btn"
                 >

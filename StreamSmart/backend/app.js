@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
+import experimentRoutes from "./routes/experimentRoutes.js";
 
 import videoRoutes from "./routes/videoRoutes.js";
 import path from "path";
@@ -23,6 +24,7 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/videos", videoRoutes);
+app.use("/api/experiments", experimentRoutes);
 
 // Test route
 app.get("/", (req, res) => {

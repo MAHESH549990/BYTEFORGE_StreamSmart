@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Play, FlaskConical, Activity } from "lucide-react";
-// import "./ExperimentPage.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function ExperimentPage() {
   const navigate = useNavigate();
@@ -17,9 +17,13 @@ export default function ExperimentPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Fetch available videos
   useEffect(() => {
     const fetchVideos = async () => {
       try {
+        setLoading(true);
+        setError("");
+
         const response = await fetch(`${API_URL}/api/videos`);
 
         if (!response.ok) {
@@ -27,7 +31,10 @@ export default function ExperimentPage() {
         }
 
         const data = await response.json();
-        const videoList = Array.isArray(data) ? data : data.videos || [];
+
+        const videoList = Array.isArray(data)
+          ? data
+          : data.videos || [];
 
         setVideos(videoList);
 
@@ -44,7 +51,10 @@ export default function ExperimentPage() {
     fetchVideos();
   }, []);
 
+  // Start experiment
   const handleStartExperiment = () => {
+    setError("");
+
     if (!videoId) {
       setError("Please select a video first.");
       return;
@@ -59,45 +69,63 @@ export default function ExperimentPage() {
       return;
     }
 
+    if (selectedVideo.format !== "hls") {
+      setError("Experiments currently require an HLS video.");
+      return;
+    }
+
     const experimentConfig = {
-      video: selectedVideo,
-      network,
+      videoId: selectedVideo._id,
+      networkProfile: network,
       fixedQuality: Number(fixedQuality),
       durationSeconds: Number(duration),
+      modes: ["baseline", "optimized"],
     };
 
-    // Pass the selected configuration to the player page.
-    navigate(`/player?videoId=${videoId}&experiment=true`, {
-      state: { experimentConfig },
-    });
+    navigate("/dashboard/experiment/run", {
+    state: {
+    video: selectedVideo,
+    experimentConfig,
+  },
+   });
   };
 
   return (
     <div className="experiment-page container-fluid py-4">
+
       <div className="mb-4">
         <div className="d-flex align-items-center gap-2 mb-2">
           <FlaskConical size={26} />
-          <h2 className="mb-0">Streaming Experiments</h2>
+
+          <h2 className="mb-0">
+            Streaming Experiments
+          </h2>
         </div>
+
         <p className="text-secondary mb-0">
-          Compare fixed-quality streaming with your custom adaptive
-          bitrate algorithm.
+          Compare fixed-quality streaming with your custom
+          adaptive bitrate algorithm.
         </p>
       </div>
 
       {error && (
-        <div className="alert alert-danger">{error}</div>
+        <div className="alert alert-danger">
+          {error}
+        </div>
       )}
 
       <div className="row g-4">
+
         <div className="col-lg-7">
           <div className="card shadow-sm border-0">
             <div className="card-body p-4">
+
               <h5 className="mb-4">
                 <Activity size={19} className="me-2" />
                 Experiment Configuration
               </h5>
 
+              {/* Video selection */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
                   Select Video
@@ -109,10 +137,16 @@ export default function ExperimentPage() {
                   onChange={(e) => setVideoId(e.target.value)}
                   disabled={loading || videos.length === 0}
                 >
-                  {loading && <option>Loading videos...</option>}
+                  {loading && (
+                    <option value="">
+                      Loading videos...
+                    </option>
+                  )}
 
                   {!loading && videos.length === 0 && (
-                    <option value="">No videos available</option>
+                    <option value="">
+                      No videos available
+                    </option>
                   )}
 
                   {videos.map((video) => (
@@ -123,6 +157,7 @@ export default function ExperimentPage() {
                 </select>
               </div>
 
+              {/* Network profile */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
                   Network Profile
@@ -138,8 +173,14 @@ export default function ExperimentPage() {
                   <option value="Moderate">Moderate</option>
                   <option value="Poor">Poor</option>
                 </select>
+
+                <small className="text-secondary">
+                  This is a profile label, not an actual network
+                  simulation yet.
+                </small>
               </div>
 
+              {/* Fixed quality */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
                   Baseline Fixed Quality
@@ -157,11 +198,12 @@ export default function ExperimentPage() {
                 </select>
 
                 <small className="text-secondary">
-                  The selected level must exist in the video's HLS
-                  manifest.
+                  The selected level must exist in the video's
+                  HLS manifest.
                 </small>
               </div>
 
+              {/* Duration */}
               <div className="mb-4">
                 <label className="form-label fw-semibold">
                   Test Duration
@@ -172,50 +214,82 @@ export default function ExperimentPage() {
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                 >
-                  <option value="30">30 seconds</option>
-                  <option value="60">60 seconds</option>
-                  <option value="120">120 seconds</option>
+                  <option value="1800">30 minutes</option>
+                  <option value="60">1 minute</option>
+                  <option value="120">2 minutes</option>
+                  <option value="300">5 minutes</option>
+                  <option value="600">10 minutes</option>
+                  <option value="1800">30 minutes</option>
                 </select>
+
+                <small className="text-secondary">
+                  Selected duration: {Number(duration) / 60} minute(s)
+                  {Number(duration) < 60 && " (less than one minute)"}
+                </small>
               </div>
 
+              {/* Start experiment */}
               <button
                 className="btn btn-primary w-100"
                 onClick={handleStartExperiment}
-                disabled={loading || videos.length === 0}
+                disabled={
+                  loading ||
+                  videos.length === 0 ||
+                  !videoId
+                }
               >
                 <Play size={18} className="me-2" />
                 Start Experiment
               </button>
+
             </div>
           </div>
         </div>
 
+        {/* Workflow information */}
         <div className="col-lg-5">
           <div className="card shadow-sm border-0 h-100">
             <div className="card-body p-4">
-              <h5 className="mb-3">Experiment Workflow</h5>
+
+              <h5 className="mb-3">
+                Experiment Workflow
+              </h5>
 
               <div className="mb-3">
-                <span className="badge bg-secondary me-2">1</span>
+                <span className="badge bg-secondary me-2">
+                  1
+                </span>
+
                 <strong>Baseline Test</strong>
+
                 <p className="text-secondary ms-4 mb-0">
                   Play the selected video at a fixed quality.
                 </p>
               </div>
 
               <div className="mb-3">
-                <span className="badge bg-secondary me-2">2</span>
+                <span className="badge bg-secondary me-2">
+                  2
+                </span>
+
                 <strong>Optimized Test</strong>
+
                 <p className="text-secondary ms-4 mb-0">
-                  Play the same video using your custom ABR algorithm.
+                  Play the same video using your custom ABR
+                  algorithm.
                 </p>
               </div>
 
               <div>
-                <span className="badge bg-secondary me-2">3</span>
-                <strong>Compare Results</strong>
+                <span className="badge bg-secondary me-2">
+                  3
+                </span>
+
+                <strong>Save and Compare Results</strong>
+
                 <p className="text-secondary ms-4 mb-0">
-                  Compare startup time, buffering, bitrate and quality
+                  Store playback metrics in MongoDB and compare
+                  startup time, buffering, bitrate and quality
                   switches.
                 </p>
               </div>
@@ -223,13 +297,16 @@ export default function ExperimentPage() {
               <hr />
 
               <p className="small text-secondary mb-0">
-                Both tests must use matching network conditions for a
-                fair comparison. Network profiles are configuration
-                choices until the network simulator is connected.
+                Both tests should use matching network conditions
+                for a fair comparison. The network profile is
+                currently a configuration choice, not an actual
+                network simulation.
               </p>
+
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

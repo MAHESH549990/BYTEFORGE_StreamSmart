@@ -29,8 +29,9 @@ export default function Footer() {
             <h6>Platform</h6>
             <Link to="/">Home</Link>
             <Link to="/dashboard">Dashboard</Link>
-            <Link to="/player">Video Player</Link>
-            <Link to="/analytics">Analytics</Link>
+            <Link to="/dashboard/player">Video Player</Link>
+            <Link to="/dashboard/analytics">Analytics</Link>
+            <Link to="/dashboard/history">Session History</Link>
           </div>
 
           {/* Information */}

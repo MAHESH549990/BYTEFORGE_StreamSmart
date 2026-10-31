@@ -1,3 +1,4 @@
+
 import { showSuccess } from "./FlashMessage";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -24,25 +25,18 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-  // Remove authentication data
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
-  // Update navbar authentication state
-  setIsLoggedIn(false);
+    setIsLoggedIn(false);
+    setMenuOpen(false);
 
-  // Close mobile menu
-  setMenuOpen(false);
+    window.dispatchEvent(new Event("authChanged"));
 
-  // Notify other components
-  window.dispatchEvent(new Event("authChanged"));
+    showSuccess("You have logged out successfully!");
 
-  // Show flash message
-  showSuccess("You have logged out successfully!");
-
-  // Redirect to login page
-  navigate("/");
-};
+    navigate("/");
+  };
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -71,44 +65,52 @@ export default function Navbar() {
           aria-label="Toggle navigation"
           aria-expanded={menuOpen}
         >
-          <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`}></i>
+          <i
+            className={`fa-solid ${
+              menuOpen ? "fa-xmark" : "fa-bars"
+            }`}
+          ></i>
         </button>
 
         {/* Navigation */}
         <div className={`stream-nav-menu ${menuOpen ? "show" : ""}`}>
-
           <div className="stream-nav-links">
             {isLoggedIn ? (
               <>
                 <NavLink
                   to="/dashboard"
+                  end
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
+                  <i className="fa-solid fa-house me-2"></i>
                   Dashboard
                 </NavLink>
 
                 <NavLink
-                  to="/player"
+                  to="/dashboard/player"
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
+                  <i className="fa-solid fa-circle-play me-2"></i>
                   Video Player
                 </NavLink>
 
                 <NavLink
-                  to="/analytics"
+                  to="/dashboard/analytics"
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
+                  <i className="fa-solid fa-chart-line me-2"></i>
                   Analytics
                 </NavLink>
 
                 <NavLink
-                  to="/history"
+                  to="/dashboard/history"
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
+                  <i className="fa-solid fa-clock-rotate-left me-2"></i>
                   History
                 </NavLink>
               </>
@@ -120,6 +122,7 @@ export default function Navbar() {
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
+                  <i className="fa-solid fa-right-to-bracket me-2"></i>
                   Login
                 </NavLink>
 
@@ -128,6 +131,7 @@ export default function Navbar() {
                   className={navLinkClass}
                   onClick={closeMenu}
                 >
+                  <i className="fa-solid fa-user-plus me-2"></i>
                   Register
                 </NavLink>
               </>
@@ -148,12 +152,16 @@ export default function Navbar() {
             ) : (
               <>
                 <button
-                    className="profile-btn"
-                    onClick={() => navigate("/profile")}
-                    title="My Profile"
-                  >
-                    <i className="fa-solid fa-user"></i>
-                  </button>
+                  className="profile-btn"
+                  onClick={() => {
+                    closeMenu();
+                    navigate("/profile");
+                  }}
+                  title="My Profile"
+                  aria-label="My Profile"
+                >
+                  <i className="fa-solid fa-user"></i>
+                </button>
 
                 <button
                   className="logout-btn"
