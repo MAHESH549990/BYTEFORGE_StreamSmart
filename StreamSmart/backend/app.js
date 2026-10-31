@@ -28,7 +28,15 @@ app.use("/api/experiments", experimentRoutes);
 
 // Redirect backend root to frontend landing page
 app.get("/", (req, res) => {
-  res.redirect(process.env.CLIENT_URL);
+  const frontendUrl = process.env.CLIENT_URL;
+
+  if (!frontendUrl) {
+    return res.status(200).json({
+      message: "StreamSmart Backend is running"
+    });
+  }
+
+  res.redirect(302, frontendUrl);
 });
 
 // Health check
