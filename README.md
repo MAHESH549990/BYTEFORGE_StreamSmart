@@ -1,403 +1,394 @@
-# 🚀 StreamSmart
-### Intelligent Video Streaming Optimization Platform
+# StreamSmart – Adaptive Video Streaming Optimization
 
-<p align="center">
-  <strong>Smarter Streaming. Better Experience.</strong>
-</p>
+StreamSmart is a full-stack video streaming optimization platform designed to study and improve video playback performance under different network conditions.
 
-<p align="center">
-  <a href="https://byteforge-streamsmart-1.onrender.com/">
-    <img src="https://img.shields.io/badge/Live%20Demo-Launch%20StreamSmart-00C7D9?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo" />
-  </a>
-  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
-  <img src="https://img.shields.io/badge/Node.js-Backend-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/MongoDB-Database-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
-</p>
+The project focuses on **Adaptive Bitrate Streaming (ABR)**, network simulation, edge caching, and playback performance analysis. It compares traditional fixed-quality streaming with a custom Adaptive Bitrate (ABR) algorithm to understand how intelligent quality selection can improve the streaming experience.
 
----
+## 1. Project Overview
 
-## 🌐 Live Demo
+Imagine a user watching a video while connected to a slow internet network.
 
-Experience StreamSmart online:
+With traditional fixed-quality streaming, the video continues using the selected quality even when network bandwidth decreases. This can cause buffering and interruptions.
 
-<p align="center">
-  <a href="https://byteforge-streamsmart-1.onrender.com/">
-    <img src="https://img.shields.io/badge/OPEN%20LIVE%20APPLICATION-StreamSmart-blue?style=for-the-badge" alt="Open StreamSmart" />
-  </a>
-</p>
+StreamSmart addresses this problem by using Adaptive Bitrate Streaming.
 
-**Live Application:** https://byteforge-streamsmart-1.onrender.com/
+For example:
 
----
+- When the internet connection is fast, the player can select 1080p.
+- When bandwidth decreases, it can switch to 720p.
+- When the connection becomes slower, it can select 360p.
 
-## 📌 Project Overview
+This allows the player to adapt video quality according to available network bandwidth.
 
-StreamSmart is an intelligent video streaming optimization platform designed to improve the video playback experience through network monitoring, adaptive video quality, performance analytics, and network simulation.
+## 2. Main Objectives
 
-Video streaming performance depends on several network parameters, including bandwidth, latency, jitter, and packet loss. Unstable network conditions can result in buffering, playback interruptions, and reduced video quality.
+- Understand how video streaming works using HLS.
+- Implement a custom Adaptive Bitrate (ABR) algorithm.
+- Simulate different network conditions, including bandwidth, latency, and packet loss.
+- Compare fixed-quality and adaptive-quality streaming.
+- Implement edge caching to reduce repeated requests to the origin server.
+- Measure and analyze streaming performance using playback telemetry.
+- Store experiment results and review performance through a dashboard.
 
-StreamSmart aims to address these challenges by bringing video playback, network experimentation, and performance insights together in one integrated platform.
+## 3. Technology Stack
 
-The platform provides a user interface, dashboard modules, video playback functionality, and backend APIs supported by MongoDB.
+| Technology   | Purpose           | Why We Use It                                                            |
+| ------------ | ----------------- | ------------------------------------------------------------------------ |
+| React.js     | Frontend          | Builds an interactive user interface.                                    |
+| Vite         | Frontend tooling  | Provides a fast development server and build process.                    |
+| Node.js      | Backend runtime   | Runs JavaScript on the server.                                           |
+| Express.js   | Backend framework | Handles APIs, authentication, video requests, and streaming routes.      |
+| MongoDB      | Database          | Stores users, videos, and experiment records.                            |
+| Mongoose     | ODM               | Defines database models and manages MongoDB operations.                  |
+| HLS.js       | Streaming library | Plays HLS videos in browsers that do not natively support HLS.           |
+| FFmpeg       | Video processing  | Converts source videos into HLS playlists and multiple quality versions. |
+| Multer       | File uploads      | Handles video uploads from users.                                        |
+| JWT          | Authentication    | Secures protected API endpoints.                                         |
+| Lucide React | Icons             | Provides icons for the dashboard and player interface.                   |
+| Bootstrap    | UI styling        | Helps create responsive interface components.                            |
 
----
+## 4. Main Features
 
-## 🎯 Project Objectives
+### A. Video Library
 
-- Improve understanding of video streaming optimization.
-- Explore adaptive bitrate streaming concepts.
-- Analyze the impact of network conditions on video playback.
-- Monitor streaming performance and playback quality.
-- Provide tools for network experimentation.
-- Visualize streaming-related metrics and analytics.
-- Build an integrated platform for video streaming evaluation.
+Users can upload their own video files or add externally hosted video URLs.
 
----
+Supported video formats include:
 
-## ✨ Key Features
+- MP4
+- WebM
+- OGG
+- HLS (.m3u8)
 
-### 📺 1. Video Streaming
-- Video library and playback interface.
-- HLS video playback support using HLS.js.
-- Video quality and playback-related controls.
-- Video management through backend APIs.
+Uploaded video files are stored on the backend, while video information such as title, description, URL, and format is stored in MongoDB.
 
-### ⚡ 2. Network Simulation
-- Network experimentation interface.
-- Bandwidth and latency-related testing.
-- Network condition analysis.
-- Experiment management.
+### B. HLS Video Streaming
 
-### 📊 3. Performance Analytics
-- Streaming performance dashboard.
-- Playback analytics and visualizations.
-- Performance comparison tools.
-- Session history and monitoring interfaces.
+StreamSmart uses HTTP Live Streaming (HLS) to deliver video content through playlists and smaller media segments.
 
-### 🧠 4. Adaptive Streaming
-- Adaptive bitrate streaming concepts.
-- Video quality selection based on network conditions.
-- Buffer health monitoring.
-- Streaming performance evaluation.
+An HLS stream can contain multiple quality levels.
 
-### 👤 5. User Management
-- User registration and login.
-- Authentication-related functionality.
-- User profile interface.
-- Dashboard experiences.
+Example:
 
-### 🛠️ 6. Admin & Dashboard
-- Dashboard interface.
-- Video management modules.
-- Analytics and monitoring pages.
-- Experiment-related interfaces.
+```text
+master.m3u8
+│
+├── 360p/
+│   ├── playlist.m3u8
+│   └── segments
+│
+├── 720p/
+│   ├── playlist.m3u8
+│   └── segments
+│
+└── 1080p/
+    ├── playlist.m3u8
+    └── segments
+```
 
----
+The master playlist provides information about the available video qualities.
 
-## 🧰 Technology Stack
+FFmpeg is used to generate these HLS versions from the original video.
 
-| Category | Technologies |
-|---|---|
-| Frontend | React 19, JavaScript |
-| Build Tool | Vite |
-| Routing | React Router |
-| UI Framework | Bootstrap 5 |
-| Styling | CSS |
-| Icons | Lucide React, Font Awesome |
-| Video Streaming | HLS.js |
-| Charts & Visualization | Recharts |
-| Backend | Node.js, Express.js 5 |
-| Database | MongoDB |
-| ODM | Mongoose |
-| Authentication | JWT, bcryptjs |
-| API Middleware | CORS, Express Middleware |
-| File Uploads | Multer |
-| Environment Configuration | dotenv |
-| Code Quality | Oxlint |
-| Version Control | Git, GitHub |
-| Deployment | Render |
+### C. Adaptive Bitrate Streaming (ABR)
 
----
+Adaptive Bitrate Streaming dynamically selects video quality based on network conditions.
 
-## 🏗️ Project Architecture
+StreamSmart implements a custom ABR algorithm that considers:
 
-StreamSmart follows a frontend-backend architecture.
+- Available network bandwidth.
+- Current buffer length.
+- Previous playback quality.
+- Quality upgrade history.
+
+Example:
+
+| Network Bandwidth | Possible Video Quality |
+| ----------------- | ---------------------- |
+| 8 Mbps            | 1080p                  |
+| 4 Mbps            | 720p                   |
+| 1 Mbps            | 360p                   |
+
+These values are illustrative; actual quality selection depends on the available HLS levels and the ABR algorithm.
+
+### D. Network Simulation
+
+The Network Lab allows users to test video streaming under different network conditions.
+
+Users can experiment with:
+
+- Bandwidth limitations.
+- Network latency.
+- Packet loss.
+
+Example:
+
+A user can reduce available bandwidth and observe how video buffering and quality selection change.
+
+This helps understand how network conditions affect streaming performance.
+
+### E. Edge Caching
+
+StreamSmart includes an edge caching system for externally hosted HLS resources.
+
+Instead of repeatedly requesting the same resource from the origin server, the Edge Server can temporarily store eligible resources.
+
+The basic workflow is:
+
+```text
+Video Player
+     |
+     v
+Edge Server
+     |
+     v
+Check Cache
+     |
+     ├── Cache Hit
+     |      |
+     |      v
+     |   Return Cached Resource
+     |
+     └── Cache Miss
+            |
+            v
+       Origin Server
+            |
+            v
+       Store Resource
+            |
+            v
+       Return Resource
+```
+
+The objective is to reduce repeated origin requests and improve resource delivery when cached resources are available.
+
+### F. Playback Telemetry
+
+StreamSmart collects playback information to evaluate streaming performance.
+
+Important metrics include:
+
+- Time to First Frame (TTFF).
+- Rebuffer Count.
+- Buffer Length.
+- Total Rebuffer Duration.
+- Current Bitrate.
+- Estimated Throughput.
+- Video Resolution.
+- Quality Switches.
+
+These metrics help understand how different network conditions and streaming strategies affect playback.
+
+### G. Streaming Experiments
+
+The Experiment Module compares two streaming approaches:
+
+**1. Baseline – Fixed Quality**
+
+The player uses a manually selected video quality level during the experiment.
+
+**2. Optimized – Custom ABR**
+
+The player uses the custom Adaptive Bitrate algorithm to select quality according to measured streaming conditions.
+
+Both tests can be performed using the same HLS video and comparable network conditions.
+
+Currently, experiments require an HLS video with at least two available quality levels.
+
+### H. Dashboard and Analytics
+
+The dashboard provides an overview of completed streaming experiments.
+
+It includes performance information such as:
+
+- Total Tests.
+- Average Startup Time.
+- Average Buffering Duration.
+- Average Bitrate.
+- Cache Hit Rate, when cache metrics are recorded.
+
+Experiment results are stored in MongoDB for later analysis.
+
+## 5. Example: How StreamSmart Works
+
+Consider a user watching a video with three available quality levels:
+
+```text
+360p  →  500 Kbps
+720p  →  1500 Kbps
+1080p →  3000 Kbps
+```
+
+These are illustrative bitrate values.
+
+Suppose the network bandwidth initially supports 1080p playback.
+
+The user then experiences a decrease in bandwidth.
+
+The custom ABR algorithm evaluates the available bandwidth and playback buffer and can select a lower quality level.
+
+The player then continues playback with the newly selected quality.
+
+This allows StreamSmart to compare adaptive streaming against fixed-quality playback.
+
+## 6. Project Architecture
 
 ```text
 StreamSmart/
 │
 ├── src/
-│   ├── Components/
-│   ├── Dashboard/
-│   ├── landing/
 │   ├── videos/
+│   │   ├── VideoPlayer.jsx
+│   │   ├── ABREngine.js
+│   │   └── Telemetry.js
+│   │
+│   ├── Dashboard/
+│   │   ├── DashboardHome.jsx
+│   │   ├── network/
+│   │   └── edge/
+│   │
+│   ├── utils/
+│   │   ├── networkSimulation.js
+│   │   └── SimulatedNetworkLoader.js
+│   │
 │   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
+│   └── main.jsx
 │
 ├── backend/
-│   ├── config/
-│   │   └── db.js
+│   ├── controllers/
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── upload.js
+│   │
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Video.js
+│   │   └── Experiment.js
 │   │
 │   ├── routes/
-│   │   ├── authRoutes.js
-│   │   ├── videoRoutes.js
-│   │   └── experimentRoutes.js
+│   ├── services/
+│   │   └── edgeCache.js
 │   │
 │   ├── uploads/
 │   ├── app.js
-│   ├── server.js
-│   └── package.json
+│   └── server.js
 │
-├── public/
-├── index.html
 ├── package.json
-├── vite.config.js
 └── README.md
 ```
 
-*This is a simplified overview of the main project structure.*
+_This is a simplified representation of the project structure._
 
----
-
-## ⚙️ Installation & Setup
-
-Follow these steps to run StreamSmart locally.
+## 7. Installation and Setup
 
 ### Prerequisites
 
-Make sure you have installed:
+Install the following tools:
 
-- [Node.js](https://nodejs.org/)
-- npm
-- [MongoDB](https://www.mongodb.com/) or MongoDB Atlas
+- Node.js
+- MongoDB
 - Git
+- FFmpeg
 
-### 1. Clone the Repository
+### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/MAHESH549990/BYTEFORGE_StreamSmart.git
 ```
 
-### 2. Navigate to the Project Directory
-
 ```bash
 cd BYTEFORGE_StreamSmart/StreamSmart
 ```
 
-### 3. Install Frontend Dependencies
+### Step 2: Install Frontend Dependencies
 
 ```bash
 npm install
 ```
 
-### 4. Install Backend Dependencies
+### Step 3: Install Backend Dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
----
+### Step 4: Configure Environment Variables
 
-## 🔐 Environment Configuration
+Create a `.env` file inside the backend directory.
 
-Create a `.env` file inside the `backend/` directory.
-
-Add the following configuration:
+Example:
 
 ```env
 PORT=5000
-
 MONGO_URI=your_mongodb_connection_string
-
+JWT_SECRET=your_secure_secret
 CLIENT_URL=http://localhost:5173
+EDGE_ALLOWED_HOSTS=your-approved-cdn-hostname.com
 ```
 
-Replace `your_mongodb_connection_string` with your actual MongoDB connection URI.
+Use the MongoDB variable name expected by your backend database connection code. Configure the Edge hostname only when your HLS resources require an additional approved CDN host.
 
-**Important Security Notes:**
+Create a frontend `.env` file in the React project root:
 
-- Never upload your `.env` file to GitHub.
-- Keep database credentials and secret keys private.
-- Make sure MongoDB is accessible before starting the backend.
-- Configure production environment variables separately on your deployment platform.
+```env
+VITE_API_URL=http://localhost:5000
+```
 
----
+Replace the backend URL and port with your actual configuration.
 
-## ▶️ Running the Application
-
-StreamSmart requires the frontend and backend to run separately during local development.
-
-### Terminal 1 — Start Backend
+### Step 5: Start the Backend
 
 From the backend directory:
 
 ```bash
-npm run dev
+node server.js
 ```
 
-Backend URL:
+### Step 6: Start the Frontend
 
-```text
-http://localhost:5000
-```
-
-Backend health-check endpoint:
-
-```text
-http://localhost:5000/api/health
-```
-
-### Terminal 2 — Start Frontend
-
-Open another terminal and navigate to the `StreamSmart` project directory:
+Open another terminal in the frontend project directory:
 
 ```bash
-cd BYTEFORGE_StreamSmart/StreamSmart
 npm run dev
 ```
 
-Open the application in your browser:
+Open the local URL displayed by Vite, normally:
 
 ```text
 http://localhost:5173
 ```
 
----
+## 8. Important Technical Notes
 
-## 📡 API Overview
+- MP4 videos are supported for normal playback.
+- HLS videos are required for the current fixed-quality versus adaptive-quality experiment workflow.
+- HLS experiments require at least two available quality levels.
+- FFmpeg can generate multiple HLS quality levels from a source video.
+- The Edge caching implementation currently uses temporary in-memory caching.
+- Network profile selection in the experiment configuration is separate from applying actual network simulation in the Network Lab.
+- Local uploaded files and externally hosted resources follow different delivery paths.
 
-The backend exposes the following API route groups:
+## 9. Future Improvements
 
-| Endpoint | Purpose |
-|---|---|
-| `/api/health` | Backend health check |
-| `/api/auth` | Authentication routes |
-| `/api/videos` | Video-related operations |
-| `/api/experiments` | Experiment-related operations |
-| `/uploads` | Uploaded file access |
+- Automatic MP4-to-HLS conversion after upload.
+- Improved ABR algorithms and quality selection strategies.
+- More advanced cache replacement policies.
+- Persistent edge caching.
+- Detailed comparison charts and reports.
+- More realistic network simulation.
+- Support for cloud-based video storage.
+- Enhanced streaming performance analytics.
 
----
+## 10. Conclusion
 
-## 🧪 Development Commands
+StreamSmart is a practical project focused on understanding video streaming technologies and optimizing playback performance.
 
-### Frontend Commands
+By combining React, Node.js, Express, MongoDB, HLS.js, FFmpeg, network simulation, and a custom ABR algorithm, the platform provides an environment to experiment with video quality adaptation and streaming performance.
 
-Run these commands from the `StreamSmart/` directory.
-
-| Command | Description |
-|---|---|
-| `npm install` | Install frontend dependencies |
-| `npm run dev` | Start Vite development server |
-| `npm run build` | Generate production build |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run Oxlint |
-
-### Backend Commands
-
-Run these commands from the `StreamSmart/backend/` directory.
-
-| Command | Description |
-|---|---|
-| `npm install` | Install backend dependencies |
-| `npm run dev` | Start backend with Nodemon |
-| `npm start` | Start backend with Node.js |
+The main objective is to understand how adaptive streaming and caching techniques can help deliver a smoother video playback experience under changing network conditions.
 
 ---
 
-## 🚀 Future Enhancements
-
-Some potential areas for further development include:
-
-- Advanced adaptive bitrate optimization algorithms.
-- Real-time network monitoring and visualization.
-- Intelligent buffering prediction.
-- AI-powered streaming quality recommendations.
-- Edge computing and CDN performance analysis.
-- Advanced Quality of Experience (QoE) evaluation.
-- Detailed streaming performance reports.
-- Enhanced real-time analytics.
-
----
-
-## 🔒 Security
-
-StreamSmart uses security-related technologies and practices, including:
-
-- Environment variables for sensitive configuration.
-- Password hashing using bcryptjs.
-- JWT-based authentication dependencies.
-- CORS configuration for frontend-backend communication.
-- Private database credentials and environment secrets.
-
----
-
-## 🤝 Contributing
-
-Contributions, suggestions, and improvements are welcome.
-
-To contribute:
-
-1. Fork the repository.
-2. Create a new branch.
-
-```bash
-git checkout -b feature/your-feature-name
-```
-
-3. Make your changes.
-4. Commit your changes.
-
-```bash
-git add .
-git commit -m "Add: your feature description"
-```
-
-5. Push your branch.
-
-```bash
-git push origin feature/your-feature-name
-```
-
-6. Open a Pull Request.
-
----
-
-## 👥 Contributors
-
-StreamSmart is built through the collaborative efforts of our development team.
-
-| Contributor | GitHub Profile |
-|---|---|
-| **svg185** | [@svg185](https://github.com/svg185) |
-| **MAHESH549990** | [@MAHESH549990](https://github.com/MAHESH549990) |
-| **Ashi-engf** | [@Ashi-engf](https://github.com/Ashi-engf) |
-| **gayatripadalia** | [@gayatripadalia](https://github.com/gayatripadalia) |
-| **yjoshioo07** | [@yjoshioo07](https://github.com/yjoshioo07) |
-
-### 🙌 Teamwork Makes It Possible
-
-Thanks to all contributors for their collaboration, creativity, and dedication towards building StreamSmart.
-
----
-
-## 📄 License
-
-A license has not yet been specified for this repository. Add a `LICENSE` file before distributing the project under a particular open-source license.
-
----
-
-<p align="center">
-  <strong>StreamSmart 🚀</strong>
-  <br />
-  Smarter Streaming. Better Experience.
-  <br /><br />
-  <a href="https://byteforge-streamsmart-1.onrender.com/">
-    Live Demo
-  </a>
-  |
-  <a href="https://github.com/MAHESH549990/BYTEFORGE_StreamSmart">
-    GitHub Repository
-  </a>
-</p>
+**Developed as a Full-Stack Video Streaming Optimization Project.**
