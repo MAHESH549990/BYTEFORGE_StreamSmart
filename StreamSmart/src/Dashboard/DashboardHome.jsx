@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -83,6 +82,15 @@ function getStartupTime(experiment) {
   return toNumber(startupEvent?.durationSeconds);
 }
 
+// Get average bitrate from saved experiment metrics.
+function getAverageBitrate(experiment) {
+  const metrics = experiment.metrics || {};
+
+  return firstNumber([
+    metrics.averageBitrate,
+  ]);
+}
+
 // Get cache information from possible stored metric structures.
 // Returns null when cache results were not recorded.
 function getCacheData(experiment) {
@@ -151,6 +159,11 @@ function calculateDashboardStats(records) {
     toNumber(record.metrics?.totalRebufferDuration)
   );
 
+  // Collect average bitrate from completed experiments.
+  const bitrateValues = completedRecords
+    .map(getAverageBitrate)
+    .filter((value) => value !== null && value > 0);
+
   // Aggregate cache hits and misses where both counts are recorded.
   const cacheRecords = completedRecords
     .map(getCacheData)
@@ -190,6 +203,9 @@ function calculateDashboardStats(records) {
     averageBufferingDuration:
       calculateAverage(bufferingTimes),
 
+    // Average bitrate in bits per second.
+    averageBitrate: calculateAverage(bitrateValues),
+
     cacheHitRate,
   };
 }
@@ -198,6 +214,23 @@ function formatSeconds(value) {
   return value === null
     ? "--"
     : `${value.toFixed(2)}s`;
+}
+
+// Format bitrate into a readable unit.
+function formatBitrate(value) {
+  if (value === null || value === undefined || value <= 0) {
+    return "--";
+  }
+
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(2)} Mbps`;
+  }
+
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(2)} Kbps`;
+  }
+
+  return `${value.toFixed(0)} bps`;
 }
 
 // Dynamic dashboard statistic card.
@@ -248,9 +281,18 @@ export default function DashboardHome() {
         setLoadingStats(true);
         setStatsError("");
 
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          throw new Error("Please log in to view dashboard statistics.");
+        }
+
         const response = await fetch(
           `${API_URL}/api/experiments`,
           {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
             signal: controller.signal,
           }
         );
@@ -396,6 +438,19 @@ export default function DashboardHome() {
             color="stat-orange"
           />
 
+          {/* Average Bitrate */}
+          <DashboardStatCard
+            title="Average Bitrate"
+            value={
+              loadingStats
+                ? "..."
+                : formatBitrate(stats.averageBitrate)
+            }
+            description="Average streaming bitrate"
+            icon={Zap}
+            color="stat-blue"
+          />
+
           <DashboardStatCard
             title="Cache Hit Rate"
             value={
@@ -484,6 +539,7 @@ export default function DashboardHome() {
         <div className="dashboard-section-heading">
           <div>
             <h2>Streaming Intelligence</h2>
+
             <p>
               Explore the systems responsible for playback optimization.
             </p>
@@ -552,6 +608,7 @@ export default function DashboardHome() {
         <div className="dashboard-section-heading">
           <div>
             <h2>Test Results</h2>
+
             <p>
               Compare streaming approaches and review previous tests.
             </p>
