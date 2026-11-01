@@ -18,38 +18,50 @@ export default function ExperimentPage() {
   const [error, setError] = useState("");
 
   // Fetch available videos
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        setLoading(true);
-        setError("");
+  // Fetch available videos
+useEffect(() => {
+  const fetchVideos = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-        const response = await fetch(`${API_URL}/api/videos`);
+      const token = localStorage.getItem("token");
 
-        if (!response.ok) {
-          throw new Error("Unable to load videos");
-        }
-
-        const data = await response.json();
-
-        const videoList = Array.isArray(data)
-          ? data
-          : data.videos || [];
-
-        setVideos(videoList);
-
-        if (videoList.length > 0) {
-          setVideoId(videoList[0]._id);
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      if (!token) {
+        throw new Error("Please log in to access your videos.");
       }
-    };
 
-    fetchVideos();
-  }, []);
+      const response = await fetch(`${API_URL}/api/videos`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to load videos");
+      }
+
+      const videoList = Array.isArray(data)
+        ? data
+        : data.videos || [];
+
+      setVideos(videoList);
+
+      if (videoList.length > 0) {
+        setVideoId(videoList[0]._id);
+      }
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchVideos();
+}, []);
 
   // Start experiment
   const handleStartExperiment = () => {
