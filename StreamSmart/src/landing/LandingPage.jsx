@@ -71,25 +71,25 @@ function LandingPage() {
 
             <div className="eyebrow">
               <span className="pulse"></span>
-              INTELLIGENT VIDEO DELIVERY
+              STREAM QUALITY, IN REAL TIME
             </div>
 
             <h1>
-              Streaming that
+              Your network.
               <br />
-              moves at <em>your speed.</em>
+              Your <em>best stream.</em>
             </h1>
 
             <p className="hero-text">
-              Meet StreamSmart — a smart video streaming optimization
-              platform that monitors network conditions and adapts
-              video quality to deliver a smoother playback experience.
+              See what your connection is doing, then watch adaptive
+              bitrate respond. StreamSmart turns network conditions
+              into a playback experience you can measure.
             </p>
 
             <div className="hero-actions">
 
               <Link className="button primary" to="/register">
-                Explore StreamSmart <span>→</span>
+                Open the signal lab <span>→</span>
               </Link>
 
               <a className="text-link" href="#how-it-works">
@@ -106,7 +106,7 @@ function LandingPage() {
               </div>
 
               <span>
-                Smarter streaming through network intelligence
+                Built to make streaming behavior visible
               </span>
             </div>
 
@@ -123,27 +123,27 @@ function LandingPage() {
         <section className="metrics container">
 
           <div>
-            <strong>4K</strong>
-            <span>Quality support goal</span>
+            <strong>Live</strong>
+            <span>Network conditions</span>
           </div>
 
           <div>
-            <strong>Real-time</strong>
-            <span>Network monitoring</span>
+            <strong>4 signals</strong>
+            <span>Bandwidth · latency · jitter · loss</span>
           </div>
 
           <div>
-            <strong>Adaptive</strong>
+            <strong>ABR</strong>
             <span>Quality selection</span>
           </div>
 
           <div>
-            <strong>360°</strong>
-            <span>Playback insights</span>
+            <strong>Playback</strong>
+            <span>Buffer and quality insights</span>
           </div>
 
           <p>
-            *Illustrative project capabilities and interface values.
+            A hands-on workspace for understanding streaming performance.
           </p>
 
         </section>
