@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserProfile.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function UserProfile() {
   const navigate = useNavigate();
 
@@ -21,7 +23,7 @@ export default function UserProfile() {
         }
 
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/auth/me`,
+          `${API_URL}/api/auth/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -115,9 +117,7 @@ export default function UserProfile() {
           <div className="profile-hero-pattern"></div>
 
           <div className="profile-hero-content">
-            <div className="profile-avatar">
-              {initials || "U"}
-            </div>
+            <div className="profile-avatar">{initials || "U"}</div>
 
             <div className="profile-hero-info">
               <span className="profile-member-label">
@@ -232,8 +232,7 @@ export default function UserProfile() {
             <strong>{joinedDate}</strong>
           </div>
         </section>
-
-        {/* Footer Note */}
+{/* Footer Note */}
         <div className="profile-security-note">
           <i className="fa-solid fa-lock"></i>
           <span>

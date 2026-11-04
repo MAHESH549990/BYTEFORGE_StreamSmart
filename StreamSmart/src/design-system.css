@@ -1,0 +1,77 @@
+/* Shared reference palette and layout across all StreamSmart pages. */
+:root{--ss-paper:#f1f0ed;--ss-surface:#fff;--ss-ink:#171717;--ss-muted:#777773;--ss-line:#e4e2dd;--ss-yellow:#e9f500;--ss-pink:#dc24d2;--ss-orange:#ffb300;--ss-gradient:linear-gradient(100deg,#d928db 0%,#ff5147 54%,#ffbd00 100%);--ss-shadow:0 14px 36px rgba(25,24,20,.06);font-family:"DM Sans",Arial,sans-serif;color:var(--ss-ink)}
+html,body,#root{min-height:100%;background:var(--ss-paper);color:var(--ss-ink)}
+body{font-family:"DM Sans",Arial,sans-serif}
+button,input,select,textarea{font-family:inherit}
+.app-layout,.site-shell,.user-dashboard,.app-container,.stream-profile-page{background:var(--ss-paper)!important;color:var(--ss-ink)!important}
+.main-content,.dashboard-main,.main-content>*,.page-content{background:transparent}
+.stream-navbar,.topbar{background:rgba(255,255,255,.94)!important;border-color:var(--ss-line)!important;color:var(--ss-ink)!important;backdrop-filter:blur(14px)}
+.stream-brand,.stream-brand:hover,.stream-nav-link,.stream-nav-link:hover,.stream-nav-link.active{color:var(--ss-ink)!important}
+.stream-navbar .brand-icon,.site-shell .brand-mark{background:var(--ss-yellow)!important;border:1px solid #d5dc00!important;color:var(--ss-ink)!important;border-radius:7px!important}
+.brand-highlight,.site-shell .brand>span:last-child,.site-shell .nav-cta span,.nav-item.active,.nav-item:hover,.eyebrow,.panel-heading,.empty-state svg,.network-footer strong{color:#a56a00!important}
+.stream-nav-link{border-radius:4px!important}
+.stream-nav-link.active,.nav-item.active,.nav-item:hover{background:#f3f1e9!important}
+.signup-btn,.primary-button,.nav-cta,.profile-address-control button,.site-shell .text-link{background:var(--ss-gradient)!important;border:0!important;border-radius:5px!important;color:#fff!important;box-shadow:none!important}
+.signup-btn:hover,.primary-button:hover{filter:saturate(1.06)}
+.logout-btn,.mobile-toggle{background:#fff!important;border:1px solid var(--ss-line)!important;color:var(--ss-ink)!important;border-radius:5px!important}
+.sidebar,.dashboard-sidebar{background:#fff!important;border-color:var(--ss-line)!important;color:var(--ss-ink)!important}
+.app-container{font-family:"DM Sans",Arial,sans-serif!important}
+.page-content,.dashboard-main{color:var(--ss-ink)}
+.stat-card,.panel,.dashboard-panel,.profile-info-card,.profile-account-card,.profile-location-card,.experiment-banner,.education-feature,.project-card,.contact-card,.skill-card,.network-card,.analytics-card,.dynamic-stat-card,.event-card,.interest-card{border-color:var(--ss-line)!important;border-radius:7px!important;box-shadow:var(--ss-shadow)!important;background:#fff!important;color:var(--ss-ink)!important}
+.welcome-section h1,.panel-heading h3,.stat-card h2,.dashboard-main h1,.dashboard-main h2,.dashboard-main h3,.dashboard-main h4{color:var(--ss-ink)}
+.eyebrow,.profile-eyebrow,.profile-location-eyebrow{color:#a56a00!important}
+.profile-hero{background:linear-gradient(115deg,#171717,#3a3731)!important;border-radius:8px!important;box-shadow:none!important}
+.profile-avatar{border-radius:8px!important}
+.profile-info-icon,.profile-location-heading-icon,.profile-account-heading-icon{background:#f5f3e8!important;color:#a56a00!important;border-radius:7px!important}
+.profile-role-badge{background:rgba(255,255,255,.13)!important}
+.profile-location-card{border-radius:8px!important}
+.profile-address-control input{border-radius:5px!important}
+.site-shell{background:var(--ss-paper)!important;overflow:hidden}
+.site-shell .hero-copy,.site-shell .hero-text,.site-shell .section-heading,.site-shell .feature-card,.site-shell .step,.site-shell .workflow,.site-shell .trust-row,.site-shell .final-cta{color:var(--ss-ink)!important}
+.site-shell .hero-copy h1,.site-shell .hero-copy h2,.site-shell .hero-copy p,.site-shell .section-heading h2,.site-shell .section-heading p,.site-shell .feature-card h3,.site-shell .feature-card p,.site-shell .step h3,.site-shell .step p,.site-shell .workflow h2,.site-shell .workflow p,.site-shell .final-cta h2,.site-shell .final-cta p{color:var(--ss-ink)!important}
+.site-shell .navbar{border-color:var(--ss-line)!important}
+.site-shell .brand,.site-shell .nav-links,.site-shell .nav-links a,.site-shell .nav-links a:hover,.site-shell .hero h1,.site-shell .hero h2,.site-shell .hero p,.site-shell .section-title,.site-shell .text-link{color:var(--ss-ink)!important}
+.site-shell .hero,.site-shell .hero-visual,.site-shell .hero-card,.site-shell .feature-card,.site-shell .service-card,.site-shell .project-card,.site-shell .contact-card,.site-shell .step,.site-shell .workflow,.site-shell .final-cta{background:#fff!important;color:var(--ss-ink)!important;border-color:var(--ss-line)!important;border-radius:7px!important;box-shadow:var(--ss-shadow)!important}
+.site-shell .hero{border:1px solid var(--ss-line)}
+.site-shell a:hover{color:var(--ss-ink)!important}
+.video-player-page{--ink:#f1f0ed;--panel:#fff;--panel-2:#f6f5f1;--line:#e4e2dd;--text:#171717;--mute:#777773;--blue:#a56a00;--mint:#8b9b00;background:var(--ink)!important;color:var(--text)!important;font-family:"DM Sans",Arial,sans-serif!important}
+.video-player-card,.video-player-page .player-panel,.video-player-page .metrics-panel,.video-player-page .telemetry-panel{background:#fff!important;border-color:var(--ss-line)!important;color:var(--ss-ink)!important;border-radius:7px!important;box-shadow:var(--ss-shadow)}
+.video-player-page button{border-radius:5px}
+.profile-page-heading h2,.profile-section-title h4,.profile-account-heading h4,.profile-location-heading h4{color:var(--ss-ink)!important}
+@media(max-width:640px){.dashboard-main{padding:18px!important}.profile-hero{padding:25px 20px!important}}
+
+/* Warm paper surfaces and vivid calls to action for auth and footer pages. */
+.login-page,.register-page{background:var(--ss-paper)!important;color:var(--ss-ink)!important}
+.login-card,.register-card{background:#fff!important;border:1px solid var(--ss-line)!important;border-radius:8px!important;box-shadow:var(--ss-shadow)!important}
+.login-icon,.register-icon,.register-brand-icon{background:var(--ss-yellow)!important;color:var(--ss-ink)!important}
+.login-btn,.register-submit{background:var(--ss-gradient)!important;border:0!important;border-radius:5px!important;color:#fff!important}
+.login-footer a,.register-login{color:#9b6400!important}
+.stream-footer{background:#fff!important;color:var(--ss-ink)!important;border-color:var(--ss-line)!important}
+.stream-footer *{border-color:var(--ss-line)}
+.stream-footer h2,.stream-footer h3,.stream-footer h4,.stream-footer h5,.stream-footer p,.stream-footer a,.stream-footer span{color:var(--ss-ink)}
+.footer-brand-icon{background:var(--ss-yellow)!important;color:var(--ss-ink)!important}
+
+/* Light editorial dashboard rail */
+.ssb-shell{--bg:#fff;--raise:#f5f3eb;--line:#e4e2dd;--text:#171717;--mute:#777773;--mint:#a56a00;--amber:#b87900}
+.ssb{font-family:"DM Sans",Arial,sans-serif!important;border-right-color:var(--ss-line)!important;box-shadow:8px 0 28px rgba(25,24,20,.035)}
+.ssb-brand-name,.ssb-link.is-active,.ssb-link:hover{color:var(--ss-ink)!important}
+.ssb-logo>rect:first-child{fill:#e9f500;stroke:#d5dc00}
+.ssb-logo-play{fill:#171717!important}
+.ssb-logo .b1,.ssb-logo .b2,.ssb-logo .b3{fill:#a56a00!important}
+.ssb-link.is-active,.ssb-link:hover{background:#f5f3eb!important}
+.ssb-link.is-active svg{color:#a56a00!important}
+.ssb-card{background:#f6f5f1!important;border-color:var(--ss-line)!important;color:var(--ss-ink)!important}
+.ssb-card strong,.ssb-card span,.ssb-toggle{color:var(--ss-ink)!important}
+.ssb-fab{background:#e9f500!important;color:#171717!important;border-color:#d5dc00!important}
+.dashboard-main :is(.dashboard-section-heading p,.panel-link,.dashboard-stat-card p,.dashboard-stat-card span){color:var(--ss-muted)}
+.dashboard-main :is(button,.panel-link,.experiment-link){border-radius:5px}
+.dashboard-main :is(.panel-link,.experiment-link){color:#9a6400}
+
+/* Give sidebar icons a small accent tile on hover and on the active page. */
+.ssb-link svg{width:28px!important;height:28px!important;flex:0 0 28px!important;padding:5px;border-radius:6px;background:transparent;box-sizing:border-box;transition:background .15s ease,color .15s ease}
+.ssb-link:hover svg,.ssb-link.is-active svg{background:#e9f500!important;color:#171717!important}
+
+/* Warm hover and active states for the top navigation and Logout action. */
+.stream-nav-link{border-radius:5px!important}
+.stream-nav-link:hover,.stream-nav-link.active{background:#f3f1e9!important;color:#171717!important}
+.logout-btn:hover,.profile-btn:hover{background:#f3f1e9!important;color:#171717!important;border-color:#ded9c8!important}

@@ -1,459 +1,83 @@
-/* =====================================================
-   STREAMSMART SIDEBAR — "playhead rail"
-   The nav is a vertical segment track. The mint line fills
-   down to the page you are on, like a video playhead.
-   All classes use the ssb- prefix, so nothing clashes with
-   your old sidebar CSS (you can delete that).
-===================================================== */
-
-.ssb-shell {
-  --bg: #0d2321;
-  --raise: #143330;
-  --line: #234744;
-  --text: #e3f0ec;
-  --mute: #86a8a1;
-  --mint: #35e0b0;
-  --amber: #ffb547;
-
-  position: sticky;
-  top: 0;
-  align-self: flex-start;
-  flex: 0 0 264px;
-  width: 264px;
-  height: 100vh;
-  z-index: 100;
-  transition: width 0.28s cubic-bezier(0.3, 0.7, 0.2, 1),
-    flex-basis 0.28s cubic-bezier(0.3, 0.7, 0.2, 1);
+/* Simple dashboard navigation with an independent scroll area. */
+.ssb-shell{
+  --bg:#fff;
+  --raise:#f5f3eb;
+  --line:#e7e5df;
+  --text:#171717;
+  --mute:#777773;
+  --mint:#a56a00;
+  --amber:#a56a00;
+  position:sticky;
+  top:0;
+  align-self:flex-start;
+  flex:0 0 250px;
+  width:250px;
+  height:100vh;
+  z-index:100;
+  transition:width .2s ease,flex-basis .2s ease;
 }
-
-.ssb-shell *,
-.ssb-shell *::before,
-.ssb-shell *::after {
-  box-sizing: border-box;
+.ssb-shell *,.ssb-shell *::before,.ssb-shell *::after{box-sizing:border-box}
+.ssb{
+  width:100%;
+  height:100%;
+  min-height:0;
+  max-height:100vh;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  padding:20px 14px 14px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  scrollbar-gutter:stable;
+  overscroll-behavior-y:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#d2d0c8 transparent;
+  background:#fff;
+  border-right:1px solid var(--line);
+  color:var(--text);
+  font-family:"DM Sans",Arial,sans-serif;
 }
-
-.ssb {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 14px 16px;
-  background: var(--bg);
-  color: var(--text);
-  border-right: 1px solid var(--line);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
-  font-family: "Figtree", system-ui, sans-serif;
+.ssb-brand{flex-shrink:0;display:flex;align-items:center;gap:11px;min-height:44px;padding:0 4px}
+.ssb-logo{width:36px;height:36px;flex:0 0 36px}
+.ssb-brand-name{color:var(--text);font-size:17px;font-weight:750;letter-spacing:-.4px;white-space:nowrap}
+.ssb-close{display:none}
+.ssb-group{flex-shrink:0;margin:0}
+.ssb-label{margin:0 0 7px;padding:0 10px;color:#85847e;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+.ssb-rail{display:flex;flex-direction:column;gap:3px}
+.ssb-link{position:relative;display:flex;align-items:center;gap:11px;min-height:42px;padding:0 11px;border-radius:6px;color:#5f5e59;font-size:13px;font-weight:550;text-decoration:none;white-space:nowrap;transition:background .15s ease,color .15s ease}
+.ssb-link svg{width:18px;height:18px;flex:0 0 18px;color:#777773}
+.ssb-link:hover{color:#171717;background:#f7f6f2}
+.ssb-link.is-active{color:#171717;background:#f4f2e7;font-weight:700}
+.ssb-link.is-active svg{color:#977000}
+.ssb-link:focus-visible,.ssb-toggle:focus-visible,.ssb-fab:focus-visible{outline:2px solid #b59300;outline-offset:2px}
+.ssb-foot{position:sticky;bottom:0;flex-shrink:0;display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:14px;padding-bottom:2px;border-top:1px solid var(--line);background:#fff}
+.ssb-card{display:flex;align-items:center;gap:10px;padding:9px 10px;background:#f8f7f4;border:1px solid var(--line);border-radius:6px}
+.ssb-ladder{display:flex;align-items:flex-end;gap:3px;width:18px;height:18px;flex:0 0 18px}
+.ssb-ladder i{width:4px;border-radius:2px;background:#b18c00}
+.ssb-ladder i:nth-child(1){height:7px}.ssb-ladder i:nth-child(2){height:12px}.ssb-ladder i:nth-child(3){height:17px}
+.ssb-card-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ssb-card-text strong{color:#171717;font-size:11px;font-weight:700}
+.ssb-card-text span{color:#777773;font-size:10px;white-space:nowrap}
+.ssb-toggle{display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border:1px solid transparent;border-radius:6px;background:transparent;color:#5f5e59;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+.ssb-toggle:hover{background:#f7f6f2;color:#171717}
+.ssb-toggle svg{flex:0 0 18px}
+.ssb-fab,.ssb-backdrop{display:none}
+@media(min-width:769px){
+  .ssb-shell.is-collapsed{flex-basis:70px;width:70px}
+  .is-collapsed .ssb-brand{justify-content:center;padding:0}
+  .is-collapsed .ssb-brand-name,.is-collapsed .ssb-link span,.is-collapsed .ssb-card-text,.is-collapsed .ssb-toggle span,.is-collapsed .ssb-label{display:none}
+  .is-collapsed .ssb-link{justify-content:center;padding:0}
+  .is-collapsed .ssb-card{justify-content:center;padding:9px 5px}
+  .is-collapsed .ssb-toggle{justify-content:center;padding:0}
+  .is-collapsed .ssb-ladder{display:none}
 }
-
-/* ---------- Brand ---------- */
-.ssb-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 0 26px 2px;
-  min-height: 64px;
-}
-
-.ssb-logo {
-  flex-shrink: 0;
-}
-
-.ssb-brand-name {
-  font-family: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: -0.02em;
-  color: #fff;
-  white-space: nowrap;
-}
-
-.ssb-close {
-  display: none;
-}
-
-.ssb-bar {
-  transform-box: fill-box;
-  transform-origin: bottom;
-  animation: ssb-ladder 2.4s ease-in-out infinite;
-}
-.ssb-bar.b2 { animation-delay: 0.25s; }
-.ssb-bar.b3 { animation-delay: 0.5s; }
-
-.ssb-logo-play {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ssb-breathe 2.4s ease-in-out infinite;
-}
-
-/* ---------- Groups ---------- */
-.ssb-group {
-  margin-bottom: 26px;
-}
-
-.ssb-label {
-  margin: 0 0 10px;
-  padding: 0 2px 0 30px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--mute);
-  white-space: nowrap;
-}
-
-/* ---------- The rail ---------- */
-.ssb-rail {
-  --accent: var(--mint);
-  --glow: rgba(53, 224, 176, 0.45);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 4px; /* keep in sync with STEP in the JSX (44px link + 4px gap) */
-}
-
-.ssb-rail.tone-amber {
-  --accent: var(--amber);
-  --glow: rgba(255, 181, 71, 0.45);
-}
-
-/* empty track: dashed like HLS segments */
-.ssb-rail::before {
-  content: "";
-  position: absolute;
-  left: 11px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  border-radius: 2px;
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--line) 0 6px,
-    transparent 6px 10px
-  );
-}
-
-/* filled track down to the active page */
-.ssb-rail::after {
-  content: "";
-  position: absolute;
-  left: 11px;
-  top: 0;
-  width: 2px;
-  height: var(--progress, 0px);
-  border-radius: 2px;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--glow);
-  transition: height 0.45s cubic-bezier(0.3, 0.7, 0.2, 1);
-}
-
-.ssb-link {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 44px;
-  padding: 0 12px 0 30px;
-  border-radius: 10px;
-  color: var(--mute);
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
-}
-
-.ssb-link svg {
-  flex-shrink: 0;
-  transition: color 0.2s;
-}
-
-/* tick on the track */
-.ssb-link::before {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 50%;
-  width: 10px;
-  height: 10px;
-  transform: translateY(-50%);
-  border-radius: 50%;
-  background: var(--bg);
-  border: 2px solid var(--line);
-  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
-}
-
-.ssb-link:hover {
-  color: var(--text);
-  background: var(--raise);
-}
-
-.ssb-link:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.ssb-link.is-passed::before {
-  border-color: var(--accent);
-}
-
-.ssb-link.is-active {
-  color: #fff;
-  font-weight: 600;
-  background: var(--raise);
-}
-
-.ssb-link.is-active svg {
-  color: var(--accent);
-}
-
-.ssb-link.is-active::before {
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 10px var(--glow);
-  animation: ssb-ping 2.2s ease-out infinite;
-}
-
-/* ---------- Footer ---------- */
-.ssb-foot {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.ssb-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: var(--raise);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-
-.ssb-ladder {
-  display: flex;
-  align-items: flex-end;
-  gap: 3px;
-  width: 20px;
-  height: 22px;
-  flex-shrink: 0;
-  margin-left: 2px;
-}
-
-.ssb-ladder i {
-  flex: 1;
-  border-radius: 2px;
-  transform-origin: bottom;
-  animation: ssb-ladder 2.4s ease-in-out infinite;
-}
-.ssb-ladder i:nth-child(1) { height: 8px;  background: var(--amber); }
-.ssb-ladder i:nth-child(2) { height: 15px; background: #4c9dff; animation-delay: 0.25s; }
-.ssb-ladder i:nth-child(3) { height: 22px; background: var(--mint); animation-delay: 0.5s; }
-
-.ssb-card-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.ssb-card-text strong {
-  font-size: 13.5px;
-  color: #fff;
-  font-weight: 600;
-}
-
-.ssb-card-text span {
-  font-size: 12px;
-  color: var(--mute);
-  white-space: nowrap;
-}
-
-.ssb-toggle {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 40px;
-  padding: 0 12px 0 14px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--mute);
-  font: inherit;
-  font-size: 13.5px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.2s, color 0.2s;
-}
-
-.ssb-toggle:hover {
-  background: var(--raise);
-  color: var(--text);
-}
-
-.ssb-toggle:focus-visible {
-  outline: 2px solid var(--mint);
-  outline-offset: 2px;
-}
-
-.ssb-toggle svg {
-  flex-shrink: 0;
-}
-
-/* mobile-only parts are hidden on desktop */
-.ssb-fab,
-.ssb-backdrop {
-  display: none;
-}
-
-/* =====================================================
-   DESKTOP: collapsed = icon rail
-===================================================== */
-@media (min-width: 769px) {
-  .ssb-shell.is-collapsed {
-    flex-basis: 80px;
-    width: 80px;
-  }
-
-  .is-collapsed .ssb-brand-name,
-  .is-collapsed .ssb-link span,
-  .is-collapsed .ssb-card-text,
-  .is-collapsed .ssb-toggle span {
-    display: none;
-  }
-
-  .is-collapsed .ssb-label {
-    height: 1px;
-    margin: 0 4px 14px 30px;
-    padding: 0;
-    font-size: 0;
-    background: var(--line);
-  }
-
-  .is-collapsed .ssb-card {
-    padding: 12px 8px;
-    justify-content: center;
-  }
-
-  .is-collapsed .ssb-ladder {
-    margin-left: 0;
-  }
-
-  .is-collapsed .ssb-toggle {
-    padding-left: 30px;
-  }
-}
-
-/* =====================================================
-   MOBILE: slide-in drawer
-===================================================== */
-@media (max-width: 768px) {
-  .ssb-shell,
-  .ssb-shell.is-collapsed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    flex: none;
-    z-index: 1001;
-    transition: none;
-  }
-
-  .ssb {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 280px;
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    box-shadow: 6px 0 28px rgba(0, 0, 0, 0.3);
-  }
-
-  .is-open .ssb {
-    transform: translateX(0);
-  }
-
-  .ssb-brand-name {
-    flex: 1;
-  }
-
-  .ssb-close {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: transparent;
-    color: var(--mute);
-    cursor: pointer;
-  }
-
-  .ssb-close:hover {
-    color: #fff;
-    background: var(--raise);
-  }
-
-  .ssb-toggle {
-    display: none;
-  }
-
-  .ssb-fab {
-    display: grid;
-    place-items: center;
-    position: fixed;
-    top: 84px; /* below your top navbar, same spot as the old toggle */
-    left: 12px;
-    width: 42px;
-    height: 42px;
-    z-index: 999;
-    border: 1px solid #234744;
-    border-radius: 12px;
-    background: #0d2321;
-    color: #35e0b0;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(13, 35, 33, 0.35);
-  }
-
-  .ssb-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: rgba(5, 16, 15, 0.6);
-    backdrop-filter: blur(3px);
-  }
-}
-
-/* =====================================================
-   MOTION
-===================================================== */
-@keyframes ssb-ladder {
-  0%, 100% { transform: scaleY(0.55); }
-  50% { transform: scaleY(1); }
-}
-
-@keyframes ssb-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-@keyframes ssb-ping {
-  0% { box-shadow: 0 0 10px var(--glow), 0 0 0 0 var(--glow); }
-  70%, 100% { box-shadow: 0 0 10px var(--glow), 0 0 0 9px rgba(0, 0, 0, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ssb-shell *,
-  .ssb-shell *::before,
-  .ssb-shell *::after,
-  .ssb-shell {
-    animation: none !important;
-    transition: none !important;
-  }
+@media(max-width:768px){
+  .ssb-shell,.ssb-shell.is-collapsed{position:fixed;top:0;left:0;bottom:0;width:0;flex:none;z-index:1001;transition:none}
+  .ssb{position:fixed;top:0;left:0;bottom:0;width:270px;height:100dvh;max-height:100dvh;transform:translateX(-100%);transition:transform .2s ease;box-shadow:8px 0 25px rgba(0,0,0,.12)}
+  .is-open .ssb{transform:translateX(0)}
+  .ssb-brand-name{flex:1}
+  .ssb-close{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--text);cursor:pointer}
+  .ssb-toggle{display:none}
+  .ssb-fab{display:grid;place-items:center;position:fixed;top:84px;left:12px;width:40px;height:40px;z-index:999;border:1px solid #d5d2c7;border-radius:6px;background:#e9f500;color:#171717;cursor:pointer}
+  .ssb-backdrop{display:block;position:fixed;inset:0;z-index:1000;background:rgba(23,23,23,.28)}
 }
